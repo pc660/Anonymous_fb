@@ -62,7 +62,7 @@ var a_facebook = {
 	insert_note:function()
 	{ 
 	    this.listener_func = setInterval(function(){
-	    elements=document.getElementsByClassName('uiUfi UFIContainer _6mv')
+		    elements=document.getElementsByClassName('uiUfi UFIContainer _6mv')
 	    var b=elements[0].getElementsByClassName('afb-comments fb-comments-post');
 			//alert(b.length);
 		    if(b.length==0)
@@ -70,17 +70,25 @@ var a_facebook = {
 		    ele=document.getElementsByName('feedback_params');
 		    mydata=JSON.parse(ele[0].value);
 		    var post_id=mydata['target_fbid'];
-		 
+		    name1='rate1';
+		    name2='rate2';
+		    name3='rate3';
+		    name4='rate4';
+		    name5='rate5';
+		    elements[0].innerHTML+='<p>Please rate the article</p>';
+			elements[0].innerHTML+='<div class="rate_widget"><div class="star_1 ratings_stars"'+'id= "'+name1+'"></div><div class="star_2 ratings_stars"'+'id= "'+name2+'"></div><div class="star_3 ratings_stars"'+'id= "'+name3+'"></div><div class="star_4 ratings_stars"' +'id= "'+name4+'"></div><div class="star_5 ratings_stars"'+'id= "'+name5+'"></div></div>';
 			elements[0].innerHTML+=a_facebook.addPosttoPage({post_id:post_id});
 			}
 			
 		},1000);
 	 
 	},	
+
+
 	addPosttoPage: function(data)
 	{
 		var question=new Array(3)
-		question[0]="Quesion1";
+		question[0]="Whats your comment regarding the posters' grammar and typos";
 		question[1]="Quesion2";
 		question[2]="Quesion3";
 		
@@ -95,7 +103,7 @@ var a_facebook = {
 	//	data['post_id']=1;
 		
 		
-		return '<div class="afb-comments fb-comments-post' + '" data-post-id="' +data['post_id'] + '"><div class="afb-comments-list"></div><div class="afb-comment-add"><p style="Font-size:20pt">' + question[0]+'</p><input id="ans1" type="text"><p style="Font-size:20pt">' + question[1]+'</p><input id="ans2" type="text"><p style="Font-size:20pt">' + question[2]+'</p><input id="ans3" type="text"><label class="uiButton uiButtonConfirm input-submit"><input type="button" value="' + 'send' + '"></label></div></div>';
+		return '<div class="afb-comments fb-comments-post' + '" data-post-id="' +data['post_id']+'"><div class="afb-comments-list"></div><div class="afb-comment-add"><textarea  style="width:500px;overflow-y:visible;overflow:hidden" id="ans1" placeholder="'+question[0]+'"></textarea><textarea style="width:500px;overflow-y:visible" id="ans2" placeholder="'+question[1]+'"></textarea><textarea style="width:500px;overflow-y:visible" id="ans3" placeholder="'+question[2]+'"></textarea><label class="uiButton uiButtonConfirm input-submit"><input type="button" value="' + 'send' + '"></label></div></div>';
 	
 	},
 	livePostingNote :function()
@@ -117,9 +125,12 @@ var a_facebook = {
 		ele=document.getElementsByName('feedback_params');
 		mydata=JSON.parse(ele[0].value);
 		var post_id=mydata['target_fbid'];
+	//	console.log(ans1.value)
 		
-		
-		
+		var question=new Array(3)
+		question[0]="Whats your comment regarding the posters' grammar and typos";
+		question[1]="Quesion2";
+		question[2]="Quesion3";
 		if(post_id==null)
 		{
 	    	element=document.getElementsByClassName('afb-comments');
@@ -154,22 +165,23 @@ var a_facebook = {
 			return;
 		}
 		
-		else if(ans1.value=="")
+		else if(ans1.value==question[0]||ans1.value=="")
 		{
 			alert("please finish question1")
 			return;
 		}
-		else if(ans2.value=="")
+		else if(ans2.value==question[1]||ans2.value=="")
 		{
 			alert("please finish question2")
 			return;
 		}
 		
-		else if(ans3.value=="")
+		else if(ans3.value==question[2]||ans3.value=="")
 		{
 			alert("please finish question3")
 			return;
 		}
+		
 		
 				var text_field0=document.createElement("p");
 				text_field0.innerHTML="Anonymous: ";
@@ -1275,8 +1287,24 @@ function rating() {
                 'json'
 		);*/
 	    });
-    
-
+		//console.log("rating system working ")
+		name1='#rate1';
+		$(name1).hover(
+				      // Handles the mouseover
+				      function() {
+					  
+					  $(this).prevAll().andSelf().addClass('ratings_over');
+					  $(this).nextAll().removeClass('ratings_vote'); 
+					 
+				      },
+				      // Handles the mouseout
+				      function() {
+					   $(this).prevAll().andSelf().removeClass('ratings_over');
+				      // can't use 'this' because it wont contain the updated data
+				      set_votes($(this).parent());
+				      }
+				      );
+				      
         $('.ratings_stars').hover(
 				  // Handles the mouseover
 				  function() {
@@ -1332,153 +1360,188 @@ function set_votes(widget) {
 
 function ratingSystem()
 {
-    setInterval(function () {
-	        elements=document.getElementsByClassName("_5jmm _5pat _5pat");
-    for(i=0;i<elements.length;i++)
-	{
+	rate=0;
+	vote=0;
+	ele=document.getElementsByName('feedback_params');
+		mydata=JSON.parse(ele[0].value);
+		var post_id=mydata['target_fbid'];
+		
+	s=document.URL;
+	a=s.split('/');
+	url="http://anonymous.comze.com/rating_"+a[4]+".php";
+	a=document.getElementsByClassName('headerTinymanName')
+	username=a[0].innerHTML;
+	   setInterval(function () {
+	        
+   
 	    //    if(array4[i]==1)
 	    //	continue;
 	    //	array[4]=1;
-	    name1='#rate1'+i;
-	    name2='#rate2'+i;
-	    name3='#rate3'+i;
-	    name4='#rate4'+i;
-	    name5='#rate5'+i;
-	  
-	    $(name1).click(function(){rate1[i]=1;});
-	    $(name2).click(function(){rate2[i]=1;});
-	    $(name3).click(function(){rate3[i]=1;});
-	    $(name4).click(function(){rate4[i]=1;});
-	    $(name5).click(function(){rate5[i]=1;});
+	    name1='#rate1';
+	    name2='#rate2';
+	    name3='#rate3';
+	    name4='#rate4';
+	    name5='#rate5';
+		
+		
+	    $(name1).click(function(){
+	    if(rate==0){
+	    if(window.confirm('Are you going to rate the article as 1 point')){
+                 rate=1;
+                 $(this).prevAll().andSelf().addClass('ratings_over');
+				 $(this).nextAll().removeClass('ratings_vote'); 
+				 $.post( "http://anonymous.comze.com/rating_group1.php", 
+{post_id:post_id,group_id:"1",rating:"1",user_name:username});
+              }
+              }
+	    });
+	    $(name2).click(function(){
+	    if(rate==0){
+	    if(window.confirm('Are you going to rate the article as 2 point')){
+                 rate=1;
+                 $(this).prevAll().andSelf().addClass('ratings_over');
+				 $(this).nextAll().removeClass('ratings_vote'); 
+				 $.post( "http://anonymous.comze.com/rating_group1.php", 
+{post_id:post_id,group_id:1,rating:2,user_name:username});
+              }
+              }
+	    });
+	    $(name3).click(function(){
+		    if(rate==0){
+	    if(window.confirm('Are you going to rate the article as 3 point')){
+                 rate=1;
+                 $(this).prevAll().andSelf().addClass('ratings_over');
+				 $(this).nextAll().removeClass('ratings_vote'); 
+				 $.post( "http://anonymous.comze.com/rating_group1.php", 
+{post_id:post_id,group_id:1,rating:3,user_name:username});
+              }
+              }
+		    
+		    
+	    });
+	    $(name4).click(function(){
+		    if(rate==0){
+	    if(window.confirm('Are you going to rate the article as 4 point')){
+                 rate=1;
+                 $(this).prevAll().andSelf().addClass('ratings_over');
+				 $(this).nextAll().removeClass('ratings_vote'); 
+				 $.post( "http://anonymous.comze.com/rating_group1.php", 
+{post_id:post_id,group_id:1,rating:4,user_name:username});
+              }
+              }
+		    
+		    
+	    });
+	    $(name5).click(function(){
+		    if(rate==0){
+	    if(window.confirm('Are you going to rate the article as 5 point')){
+                 rate=1;
+                 $(this).prevAll().andSelf().addClass('ratings_over');
+				 $(this).nextAll().removeClass('ratings_vote'); 
+				 $.post( "http://anonymous.comze.com/rating_group1.php", 
+{post_id:post_id,group_id:1,rating:5,user_name:username});
+              }
+              }
+		    
+		    
+	    });
 
 	    
-
+		
 	    $(name5).hover(
 				      // Handles the mouseover
 				      function() {
-					  if(rate5[i]==0)
-					      {
+					  if(rate==0){
 					  $(this).prevAll().andSelf().addClass('ratings_over');
 					  $(this).nextAll().removeClass('ratings_vote'); 
-					  //  alert(1);
-					      }
-					  else
-					      {
-						 ;
-					      }
+					  }
 				      },
 				      // Handles the mouseout
 				      function() {
-					  if(rate5[i]==0)
-					      
+					   if(rate==0)
+					   {
 					   $(this).prevAll().andSelf().removeClass('ratings_over');
-					  else
-					      ;
-					      // alert(1);
-					  //   can't use 'this' because it wont contain the updated data
-					   /// set_votes($(this).parent());
-					 // alert(2);
+					   vote=5;
+					   }// can't use 'this' because it wont contain the updated data
+				     
 				      }
 				      );
 	    $(name1).hover(
 			   // Handles the mouseover                                                                                                                                              
 			   function() {
-			       if(rate1[i]==0)
-				   { $(this).prevAll().andSelf().addClass('ratings_over');
+			   	if(rate==0){
+			       $(this).prevAll().andSelf().addClass('ratings_over');
 			       $(this).nextAll().removeClass('ratings_vote');
-				   }//  alert(1); 
-			       else
-				   {
-				       
 				   }
 			   },
 			   // Handles the mouseout                                                                                                                                               
 			   function() {
-			       if(rate1[i]==0)
+			   	if(rate==0){
 			       $(this).prevAll().andSelf().removeClass('ratings_over');
-			       else
-				   ;
-			       //   can't use 'this' because it wont contain the updated data                                                                                                   
-			       // set_votes($(this).parent());
-			       // alert(2);                                                                                                                                                       
-			   }
+				      // can't use 'this' because it wont contain the updated data
+					  vote=1;
+				}
+				}      
 			   );
 	    $(name2).hover(
 			   // Handles the mouseover                                                                                                                                              
 			   function() {
-			       if(rate2[i]==0){
+			   	if(rate==0){
 			       $(this).prevAll().andSelf().addClass('ratings_over');
 			       $(this).nextAll().removeClass('ratings_vote');
-			       }
-			       else
-				   ;//  alert(1);                                                                                                                                                     
+			                }                                                                                                                                          
 			   },
 			   // Handles the mouseout                                                                                                                                               
 			   function() {
-			       if(rate2[i]==0)
-			       $(this).prevAll().andSelf().removeClass('ratings_over');
-			       //   can't use 'this' because it wont contain the updated data                                                                                                   
-			       //set_votes($(this).parent());
-			       else
-				   ;
-			       // alert(2);                                                                                                                                                       
+			   if(rate==0){
+			        $(this).prevAll().andSelf().removeClass('ratings_over');
+				      // can't use 'this' because it wont contain the updated data
+				      vote=2;
+				      }                                                                                                                                                     
 			   }
 			   );
 	    $(name3).hover(
 			   // Handles the mouseover                                                                                                                                              
 			   function() {
-			       if(rate3[i]==0)
-				   {
+			      if(rate==0)
+			      {
 			       $(this).prevAll().andSelf().addClass('ratings_over');
 			       $(this).nextAll().removeClass('ratings_vote');
-				   }
-			       else
-				   {
-				       ;
-				   }//  alert(1);                                                                                                                                                     
+				   }                                                                                                                                                     
 			   },
 			   // Handles the mouseout                                                                                                                                               
 			   function() {
-			       if(rate3[i]==0)
-				   
+			       if(rate==0)
+			       {
 			       $(this).prevAll().andSelf().removeClass('ratings_over');
-			       
-			       else
-				   ;
+				    vote=3;
+				    }  // can't use 'this' because it wont contain the updated data
+				      
 
-			       //   can't use 'this' because it wont contain the updated data                                                                                                   
-			       //set_votes($(this).parent());
-			       // alert(2);                                                                                                                                                       
+			                                                                                                                                                             
 			   }
 			   );
 	    $(name4).hover(
 			   // Handles the mouseover                                                                                                                                              
 			   function() {
-			       if(rate4[i]==0)
-				   {
+			       if(rate==0)
+			       {
 			       $(this).prevAll().andSelf().addClass('ratings_over');
 			       $(this).nextAll().removeClass('ratings_vote');
-				   }
-			       else
-				   ;//  alert(1);                                                                                                                                                     
+				  }                                                                                                                                                     
 			   },
 			   // Handles the mouseout                                                                                                                                               
 			   function() {
-			       if(rate4[i]==0)
-				   {
+			       if(rate==0)
+			       {
 			       $(this).prevAll().andSelf().removeClass('ratings_over');
-				   }//   can't use 'this' because it wont contain the updated data                                                                                                   
-			       //set_votes($(this).parent());
-			       else
-				   ;
-			       // alert(2);                                                                                                                                                       
+				   vote=4;
+				   }                                                                                                                                             
 			   }
 			   );
 
-	    //	    var a = document.getElementById(name1);
-	    // a.addEventListener("click", function(){                                                                                                                                                               		          alert(1);                                                                                                                                                                 
-	    //      }, false); 
-	}
+	  
+	
 	},1000);
 }
 
@@ -1524,15 +1587,10 @@ for(i=0;i<rate5.length;i++)
 
 
 
-
 a_facebook.create();
+//rating();
 ratingSystem();
 
-person1=0;
-person2=0;
-person3=0;
-person4=0;
-person5=0;
 /*setInterval(function()
 	    {
 		//	alert(1);
