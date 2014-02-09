@@ -1,64 +1,322 @@
-VAR A_FACEBOOK = {
+var a_facebook = {
 	
-	WALL_LENGTH: 0,
+	wall_length: 0,
 	
-	PROFILE_LENGTH: 0,
+	profile_length: 0,
 	
-	LISTENER_FUNC: NULL,
+	listener_func: null,
 	
-	U1: NULL,
+	u1: null,
 	
-	LANG: {
-		POST_PLACEHOLDER: 'TYPE YOUR ANONYMOUS POST...',
-		POST_ADD: 'SEND'
+	lang: {
+		post_placeholder: 'Type your anonymous post...',
+		post_add: 'Send'
 	},
 		
-	CREATE: FUNCTION(){
+	create: function(){
 				
-		THIS.INITPAGE();
+		this.initPage();
+		this.livePostingNote();
+		this.updateAnswerContent();
+		this.changeUrlListener();
 		
-		THIS.LIVEPOSTING2();
-		
-		THIS.CHANGEURLLISTENER();
-		
-		THIS.UPDATEU1();
+		this.updateU1();
 		
 		//
 		
-		// THIS.IMPORTCSS();
+		// this.importCSS();
 		
 	},
 	
-	INITPAGE: FUNCTION(){
+	initPage: function(){
 	
-		VAR CONTAINER = THIS.RECOGNIZEPAGETYPE();
+		var container = this.recognizePageType();
 				
-		CLEARINTERVAL(A_FACEBOOK.LISTENER_FUNC);
+		clearInterval(a_facebook.listener_func);
 		
 		//
 		 
-		IF(CONTAINER=='WALL'){
+		if(container=='wall'){
 		
-			THIS.INSERTWALLFRAME();
+			this.insertWallFrame();
 			
-			THIS.LISTENWALLLENGTH();
+			this.listenWallLength();
 					
-		} ELSE IF(CONTAINER=='PROFILE'){
+		} else if(container=='profile'){
 
-			THIS.INSERTPROFILEFRAME();
+			this.insertProfileFrame();
 			
-			THIS.LISTENPROFILEPOSTLENGTH();
+			this.listenProfilePostLength();
 
-		} ELSE IF(CONTAINER=='PHOTO'){
+		} else if(container=='photo'){
 			
-			THIS.INSERTPHOTOFRAME();
+			this.insertPhotoFrame();
 			
 		}
-		ELSE{
-		THIS.INSERT();
-		}//	ALERT(1);
+		else{
+	//	this.insert();
+		this.insert_note()
+		}//	alert(1);
 		
 	},
+	insert_note:function()
+	{ 
+	    this.listener_func = setInterval(function(){
+		    elements=document.getElementsByClassName('uiUfi UFIContainer _6mv')
+	    var b=elements[0].getElementsByClassName('afb-comments fb-comments-post');
+			//alert(b.length);
+		    if(b.length==0)
+			{
+		    ele=document.getElementsByName('feedback_params');
+		    mydata=JSON.parse(ele[0].value);
+		    var post_id=mydata['target_fbid'];
+		    name1='rate1';
+		    name2='rate2';
+		    name3='rate3';
+		    name4='rate4';
+		    name5='rate5';
+		    elements[0].innerHTML+='<p>Please rate the article</p>';
+			elements[0].innerHTML+='<div class="rate_widget"><div class="star_1 ratings_stars"'+'id= "'+name1+'"></div><div class="star_2 ratings_stars"'+'id= "'+name2+'"></div><div class="star_3 ratings_stars"'+'id= "'+name3+'"></div><div class="star_4 ratings_stars"' +'id= "'+name4+'"></div><div class="star_5 ratings_stars"'+'id= "'+name5+'"></div></div>';
+			elements[0].innerHTML+=a_facebook.addPosttoPage({post_id:post_id});
+			}
+			
+		},1000);
+	 
+	},	
+
+
+	addPosttoPage: function(data)
+	{
+		var question=new Array(3)
+		question[0]="Whats your comment regarding the posters' grammar and typos";
+		question[1]="Quesion2";
+		question[2]="Quesion3";
+		
+
+		var default_data = {
+			post_id: null
+		};
+		data = jQuery.extend(default_data, data);
+	//	alert(data['post_id'])
+		if(data['post_id']==null)
+		    return '';
+	//	data['post_id']=1;
+		
+		
+		return '<div class="afb-comments fb-comments-post' + '" data-post-id="' +data['post_id']+'"><div class="afb-comments-list"></div><div class="afb-comment-add"><textarea  style="width:500px;overflow-y:visible;overflow:hidden" id="ans1" placeholder="'+question[0]+'"></textarea><textarea style="width:500px;overflow-y:visible" id="ans2" placeholder="'+question[1]+'"></textarea><textarea style="width:500px;overflow-y:visible" id="ans3" placeholder="'+question[2]+'"></textarea><label class="uiButton uiButtonConfirm input-submit"><input tyPE="BUTTON" VALUE="' + 'SEND' + '"></LABEL></DIV></DIV>';
+	
+	},
+	LIVEPOSTINGNOTE :FUNCTION()
+	{
+	
+	SETINTERVAL(FUNCTION(){
+	
+	B=DOCUMENT.GETELEMENTSBYCLASSNAME('INPUT-SUBMIT');
+	EXIST_BUTTON=B[0];
+	EXIST_BUTTON.ONCLICK=FUNCTION(){A_FACEBOOK.POSTANSWER();}; 
+	    },1000);
+	},
+	
+	POSTANSWER:FUNCTION()
+	{
+		ANS1=DOCUMENT.GETELEMENTBYID("ANS1")
+		ANS2=DOCUMENT.GETELEMENTBYID("ANS2")
+		ANS3=DOCUMENT.GETELEMENTBYID("ANS3")
+		ELE=DOCUMENT.GETELEMENTSBYNAME('FEEDBACK_PARAMS');
+		MYDATA=JSON.PARSE(ELE[0].VALUE);
+		VAR POST_ID=MYDATA['TARGET_FBID'];
+	//	CONSOLE.LOG(ANS1.VALUE)
+		
+		VAR QUESTION=NEW ARRAY(3)
+		QUESTION[0]="WHATS YOUR COMMENT REGARDING THE POSTERS' GRAMMAR AND TYPOS";
+		QUESTION[1]="QUESION2";
+		QUESTION[2]="QUESION3";
+		IF(POST_ID==NULL)
+		{
+	    	ELEMENT=DOCUMENT.GETELEMENTSBYCLASSNAME('AFB-COMMENTS');
+			POST_ID=ELEMENT[0].ATTRIBUTES['DATA-POST-ID'];
+		}
+    
+        VAR DATA=
+	{
+	    ANSWER1:"",
+	    ANSWER2:"",
+	    ANSWER3:"",
+	    POST_ID:1
+	};
+		  VAR DATA_TYPE={
+	    MESSAGE:"",
+	    POST_ID:1
+	};
+		DATA.ANSWER1=ANS1.VALUE;
+		DATA.ANSWER2=ANS2.VALUE;
+		DATA.ANSWER3=ANS3.VALUE;
+		DATA.POST_ID=POST_ID;
+		DATA_TYPE.MESSAGE=ANS1.VALUE+"@"+ANS2.VALUE+"@"+ANS3.VALUE;
+		DATA_TYPE.POST_ID=POST_ID;
+	//	CONSOLE.LOG(DATA.ANSWER1)
+	//	CONSOLE.LOG(DATA.ANSWER2)
+//		CONSOLE.LOG(DATA.ANSWER3)
+	//	CONSOLE.LOG(DATA.POST_ID)
+	//	CONSOLE.LOG(DATA)
+		IF(ANS1.VALUE=="" || ANS2.VALUE==""&& ANS3.VALUE=="")
+		{
+			//ALERT("PLEASE FINISH ALL QUESTIONS")
+			RETURN;
+		}
+		
+		ELSE IF(ANS1.VALUE==QUESTION[0]||ANS1.VALUE=="")
+		{
+			ALERT("PLEASE FINISH QUESTION1")
+			RETURN;
+		}
+		ELSE IF(ANS2.VALUE==QUESTION[1]||ANS2.VALUE=="")
+		{
+			ALERT("PLEASE FINISH QUESTION2")
+			RETURN;
+		}
+		
+		ELSE IF(ANS3.VALUE==QUESTION[2]||ANS3.VALUE=="")
+		{
+			ALERT("PLEASE FINISH QUESTION3")
+			RETURN;
+		}
+		
+		
+				VAR TEXT_FIELD0=DOCUMENT.CREATEELEMENT("P");
+				TEXT_FIELD0.INNERHTML="ANONYMOUS: ";
+				A=DOCUMENT.GETELEMENTSBYCLASSNAME('UFILIST')
+				
+				A[0].APPENDCHILD(TEXT_FIELD0);
+				VAR NEWDIV=DOCUMENT.CREATEELEMENT('DIV');
+				NEWDIV.SETATTRIBUTE('CLASS', 'TEXTFIELD');
+				
+				VAR TEXT_FIELD1=DOCUMENT.CREATEELEMENT("P");
+				TEXT_FIELD1.INNERHTML="ANSWER FOR QUESTION1: "+ANS1.VALUE;
+				VAR TEXT_FIELD2=DOCUMENT.CREATEELEMENT("P");	   
+				TEXT_FIELD2.INNERHTML="ANSWER FOR QUESTION2: "+ANS2.VALUE;
+				VAR TEXT_FIELD3=DOCUMENT.CREATEELEMENT("P");   
+				TEXT_FIELD3.INNERHTML="ANSWER FOR QUESTION3: "+ANS3.VALUE;
+				
+				NEWDIV.APPENDCHILD(TEXT_FIELD1);
+				NEWDIV.APPENDCHILD(TEXT_FIELD2);
+				NEWDIV.APPENDCHILD(TEXT_FIELD3);
+				A[0].APPENDCHILD(NEWDIV)
+	
+	ANS1.VALUE="";
+	ANS2.VALUE="";
+	ANS3.VALUE="";
+	//CONSOLE.LOG(DATA);
+	
+	
+	A_FACEBOOK.ADDANSWERTODB(DATA)
+	},
+	ADDANSWERTODB: FUNCTION(DATA){
+				
+	//	  CONSOLE.LOG(DATA['MESSAGE']);
+    //CONSOLE.LOG(DATA['POST_ID']);
+    CONSOLE.LOG(DATA);
+    $.POST( "HTTP://ANONYMOUS.COMZE.COM/TEST1.PHP", 
+{ANSWER1:DATA['ANSWER1'],ANSWER2:DATA['ANSWER2'],ANSWER3:DATA['ANSWER3'],POST_ID:DATA['POST_ID']});
+
+	},
+	UPDATEANSWERCONTENT : FUNCTION()
+	{
+			ELE=DOCUMENT.GETELEMENTSBYNAME('FEEDBACK_PARAMS');
+		    MYDATA=JSON.PARSE(ELE[0].VALUE);
+		    VAR POST_ID=MYDATA['TARGET_FBID'];
+ $.POST( "HTTP://ANONYMOUS.COMZE.COM/GETPOST.PHP",{POST_ID:POST_ID},FUNCTION(DATA1)
+			 {	
+				 A_FACEBOOK.ADDANSWERTOHTML(DATA1);
+			});
+			},
+	
+	ADDANSWERTOHTML:FUNCTION(DATA1)
+	{
+	
+  //ALERT(POST_ARRAY);
+    VAR I=0;
+    VAR ARRAY=NEW ARRAY();
+    VAR OBJECT=NEW ARRAY();
+    VAR DATA="";
+    VAR FLAG=0;
+    FOR(I=0;I<DATA1.LENGTH;I++)
+	{
+	    IF(FLAG==1)
+		{
+		       
+		    IF(DATA1[I]=='}')
+			{
+			    DATA+=DATA1[I];
+			    ARRAY.PUSH(DATA);
+			    //    ALERT(DATA);
+			    DATA='';
+			    //ALERT(DATA)
+			    FLAG=0;
+			    CONTINUE;
+			}
+		    DATA+=DATA1[I];
+		        
+		}
+
+	    IF(DATA1[I]=='{')
+		{
+		    DATA+=DATA1[I];
+		    FLAG=1;
+		}
+
+	}
+    CONSOLE.LOG(DATA1)
+    FOR(I=0;I<ARRAY.LENGTH;I++)
+	{
+	    VAR TEMP=JSON.PARSE(ARRAY[I]);
+	    OBJECT.PUSH(TEMP);
+	}
+	
+	
+		
+		
+		
+    FOR(I=0;I<OBJECT.LENGTH;I++)
+	{
+		CONSOLE.LOG(OBJECT[I])
+		ELE=DOCUMENT.GETELEMENTSBYNAME('FEEDBACK_PARAMS');
+		MYDATA=JSON.PARSE(ELE[0].VALUE);
+		VAR POST_ID=MYDATA['TARGET_FBID'];
+	   
+		    IF(OBJECT[I].POST_ID==POST_ID)
+			{
+			
+			
+				VAR TEXT_FIELD0=DOCUMENT.CREATEELEMENT("P");
+				TEXT_FIELD0.INNERHTML="ANONYMOUS: ";
+				A=DOCUMENT.GETELEMENTSBYCLASSNAME('UFILIST')
+				
+				A[0].APPENDCHILD(TEXT_FIELD0);
+				VAR NEWDIV=DOCUMENT.CREATEELEMENT('DIV');
+				NEWDIV.SETATTRIBUTE('CLASS', 'TEXTFIELD');
+				
+				VAR TEXT_FIELD1=DOCUMENT.CREATEELEMENT("P");
+				TEXT_FIELD1.INNERHTML="ANSWER FOR QUESTION1: "+OBJECT[I].ANSWER1;
+				VAR TEXT_FIELD2=DOCUMENT.CREATEELEMENT("P");	   
+				TEXT_FIELD2.INNERHTML="ANSWER FOR QUESTION2: "+OBJECT[I].ANSWER2;
+				VAR TEXT_FIELD3=DOCUMENT.CREATEELEMENT("P");   
+				TEXT_FIELD3.INNERHTML="ANSWER FOR QUESTION3: "+OBJECT[I].ANSWER3;
+				
+				NEWDIV.APPENDCHILD(TEXT_FIELD1);
+				NEWDIV.APPENDCHILD(TEXT_FIELD2);
+				NEWDIV.APPENDCHILD(TEXT_FIELD3);
+				A[0].APPENDCHILD(NEWDIV)
+
+			}
+		}
+	
+    
+
+	
+	},
+	
+
 	
 	UPDATEU1: FUNCTION(){
 		
@@ -374,14 +632,15 @@ VAR A_FACEBOOK = {
 		    NAME4='RATE4'+I;
 		    NAME5='RATE5'+I;
 		    //    ARRAY4[I]=1;
-œò½Á	  a[0].innerHTML+=a_facebook.addPostContainerHTML({post_id:post_id});
-	  a[0].innerHTML+='<div class="rate_widget"><div class="star_1 ratings_stars"'+'id= "'+name1+'"></div><div class="star_2 ratings_stars"'+'id= "'+name2+'"></div><div class="star_3 ratings_stars"'+'id= "'+name3+'"></div><div class="star_4 ratings_stars"' +'id= "'+name4+'"></div><div class="star_5 ratings_stars"'+'id= "'+name5+'"></div></div>';
+		    //  A[0].INNERHTML+=A_FACEBOOK.ADDPOSTCONTAINERHTML({POST_ID:POST_ID});
+	  A[0].INNERHTML+='<DIV CLASS="RATE_WIDGET"><DIV CLASS="STAR_1 RATINGS_STARS"'+'ID= "'+NAME1+'"></DIV><DIV CLASS="STAR_2 RATINGS_STARS"'+'ID= "'+NAME2+'"></DIV><DIV CLASS="STAR_3 RATINGS_STARS"'+'ID= "'+NAME3+'"></DIV><DIV CLASS="STAR_4 RATINGS_STARS"' +'ID= "'+NAME4+'"></DIV><DIV CLASS="STAR_5 RATINGS_STARS"'+'ID= "'+NAME5+'"></DIV></DIV>';
+	  A[0].INNERHTML+=A_FACEBOOK.ADDPOSTCONTAINERHTML({POST_ID:POST_ID});
 			}
 			}
 		},1000);
-	    // alert(1);
-	    // $('clearfix _5pcr userContentWrapper').each(function(){
-	    //alert(1);
+	    // ALERT(1);
+	    // $('CLEARFIX _5PCR USERCONTENTWRAPPER').EACH(FUNCTION(){
+	    //ALERT(1);
 	    //    });
 	},
 
@@ -390,119 +649,119 @@ VAR A_FACEBOOK = {
 
 
 
-	insertWallFrame: function(){
+	INSERTWALLFRAME: FUNCTION(){
 		
-		var update_post = [];
+		VAR UPDATE_POST = [];
 				
-		jQuery("#home_stream li.uiStreamStory").each(function(){
+		JQUERY("#HOME_STREAM LI.UISTREAMSTORY").EACH(FUNCTION(){
 						
-			var $this = jQuery(this);
+			VAR $THIS = JQUERY(THIS);
 			
-			var $this_sub_stories = $this.find('.uiStreamSubstories li');
+			VAR $THIS_SUB_STORIES = $THIS.FIND('.UISTREAMSUBSTORIES LI');
 			
-			// Gdy wystœô ¹pujœô ¥ sub stories
+			// GDY WYSTœô ¸PUJœô ¤ SUB STORIES
 			
-			if($this_sub_stories.length){
+			IF($THIS_SUB_STORIES.LENGTH){
 								
-				$this_sub_stories.each(function(){
+				$THIS_SUB_STORIES.EACH(FUNCTION(){
 										
-					var $this = $(this);
+					VAR $THIS = $(THIS);
 					
-					if($this.prop('data-afacebook-status')){
+					IF($THIS.PROP('DATA-AFACEBOOK-STATUS')){
 						
-						return true;
+						RETURN TRUE;
 						
 					}
 					
-					$this.prop('data-afacebook-status', true);
+					$THIS.PROP('DATA-AFACEBOOK-STATUS', TRUE);
 					
-					var post_id = a_facebook.postIdByFeedbackParams($this);
+					VAR POST_ID = A_FACEBOOK.POSTIDBYFEEDBACKPARAMS($THIS);
 										
-					if(!post_id){
+					IF(!POST_ID){
 						
-						return true;
+						RETURN TRUE;
 						
 					}
 					
-					update_post.push(post_id);
+					UPDATE_POST.PUSH(POST_ID);
 														
 					//
 					
-					var $space = $this.find('.uiStreamFooter').next();
+					VAR $SPACE = $THIS.FIND('.UISTREAMFOOTER').NEXT();
 					
-					if($space.hasClass('uiStreamEdgeStoryLine')){
+					IF($SPACE.HASCLASS('UISTREAMEDGESTORYLINE')){
 						
-						$space = $this.find('.uiStreamFooter').eq(1).next();
+						$SPACE = $THIS.FIND('.UISTREAMFOOTER').EQ(1).NEXT();
 						
 					}
 					
 					
 																	
-					$space.after(a_facebook.addPostContainerHTML({post_id: post_id}));
+					$SPACE.AFTER(A_FACEBOOK.ADDPOSTCONTAINERHTML({POST_ID: POST_ID}));
 					
 				});
 								
-			} else {
+			} ELSE {
 			
 				//
 				
-				if($this.prop('data-afacebook-status')){
+				IF($THIS.PROP('DATA-AFACEBOOK-STATUS')){
 					
-					return true;
-					
-				}
-				
-				$this.prop('data-afacebook-status', true);
-				
-				var post_id = a_facebook.postIdByFeedbackParams($this);
-				
-				if(!post_id){
-					
-					return true;
+					RETURN TRUE;
 					
 				}
 				
-				update_post.push(post_id);
+				$THIS.PROP('DATA-AFACEBOOK-STATUS', TRUE);
+				
+				VAR POST_ID = A_FACEBOOK.POSTIDBYFEEDBACKPARAMS($THIS);
+				
+				IF(!POST_ID){
+					
+					RETURN TRUE;
+					
+				}
+				
+				UPDATE_POST.PUSH(POST_ID);
 													
 				//
 				
-				var $space = $this.find('.uiStreamFooter').next();
+				VAR $SPACE = $THIS.FIND('.UISTREAMFOOTER').NEXT();
 				
-				if($space.hasClass('uiStreamEdgeStoryLine')){
+				IF($SPACE.HASCLASS('UISTREAMEDGESTORYLINE')){
 					
-					$space = $this.find('.uiStreamFooter').eq(1).next();
+					$SPACE = $THIS.FIND('.UISTREAMFOOTER').EQ(1).NEXT();
 					
 				}
 				
 				//
 																
-				$space.after(a_facebook.addPostContainerHTML({post_id: post_id}));
+				$SPACE.AFTER(A_FACEBOOK.ADDPOSTCONTAINERHTML({POST_ID: POST_ID}));
 			
 			}
 						
 		});
 						
-		this.updatePostContent(update_post);
+		THIS.UPDATEPOSTCONTENT(UPDATE_POST);
 		
 	},
 	
-	updatePostContent: function(input_post_list){
-	console.log(input_post_list);
-		this.getPostFromDB(input_post_list, function(post_list){
+	UPDATEPOSTCONTENT: FUNCTION(INPUT_POST_LIST){
+	CONSOLE.LOG(INPUT_POST_LIST);
+		THIS.GETPOSTFROMDB(INPUT_POST_LIST, FUNCTION(POST_LIST){
 						
-			if(!post_list){
+			IF(!POST_LIST){
 				
-				return false;
+				RETURN FALSE;
 				
 			}
 			
 			//
-			//alert(1);
-			for(i in post_list){
+			//ALERT(1);
+			FOR(I IN POST_LIST){
 				
-				var e = post_list[i];
+				VAR E = POST_LIST[I];
 												
-				a_facebook.addPostToHTML({post_id: e.post_id, message: e.comments, time:e.time});
+				A_FACEBOOK.ADDPOSTTOHTML({POST_ID: E.POST_ID, MESSAGE: E.COMMENTS, TIME:E.TIME});
 				
 			}
 						
@@ -511,44 +770,44 @@ VAR A_FACEBOOK = {
 		
 	},
 	
-	getPostFromDB: function(post_list, return_func){
+	GETPOSTFROMDB: FUNCTION(POST_LIST, RETURN_FUNC){
 								
-		chrome.extension.sendMessage({method: "postList",post_list: post_list}, function(data) {
+		CHROME.EXTENSION.SENDMESSAGE({METHOD: "POSTLIST",POST_LIST: POST_LIST}, FUNCTION(DATA) {
 						
-		 	 return_func(data);
+		 	 RETURN_FUNC(DATA);
 		  
 		});		
 	},
 	
-	addPostToDB: function(data, return_func){
+	ADDPOSTTODB: FUNCTION(DATA, RETURN_FUNC){
 				
-		var data_default = {
-			u1: this.u1
+		VAR DATA_DEFAULT = {
+			U1: THIS.U1
 		};
 		
-		data = $.extend(data_default, data);
-		//alert(data['ul']);
+		DATA = $.EXTEND(DATA_DEFAULT, DATA);
+		//ALERT(DATA['UL']);
 		//
 						
-		chrome.extension.sendMessage({method: "postAdd",post_data: data}, function(response) {
+		CHROME.EXTENSION.SENDMESSAGE({METHOD: "POSTADD",POST_DATA: DATA}, FUNCTION(RESPONSE) {
 
-		 	 // console.log(response);
+		 	 // CONSOLE.LOG(RESPONSE);
 		  
 		});		
 
 	},
 		
-	listenWallLength: function(){
+	LISTENWALLLENGTH: FUNCTION(){
 		
-		this.listener_func = setInterval(function(){
+		THIS.LISTENER_FUNC = SETINTERVAL(FUNCTION(){
 			
-			var wall_length = jQuery("#home_stream li.uiStreamStory").length;
+			VAR WALL_LENGTH = JQUERY("#HOME_STREAM LI.UISTREAMSTORY").LENGTH;
 			
-			if(wall_length > a_facebook.wall_length){
+			IF(WALL_LENGTH > A_FACEBOOK.WALL_LENGTH){
 								
-				a_facebook.wall_length = wall_length;
+				A_FACEBOOK.WALL_LENGTH = WALL_LENGTH;
 				
-				a_facebook.insertWallFrame();
+				A_FACEBOOK.INSERTWALLFRAME();
 				
 			}
 			
@@ -556,352 +815,328 @@ VAR A_FACEBOOK = {
 		
 	},
 	
-	importCSS: function(){
+	IMPORTCSS: FUNCTION(){
 		
-		jQuery('<link rel="stylesheet" href="http://127.0.0.1/afacebook_chrome/app.css"/>').appendTo("head");
+		JQUERY('<LINK REL="STYLESHEET" HREF="HTTP://127.0.0.1/AFACEBOOK_CHROME/APP.CSS"/>').APPENDTO("HEAD");
 		
 	},
 	
-	formatTime: function(time){
+	FORMATTIME: FUNCTION(TIME){
 		
-		if(!time){
+		IF(!TIME){
 		
-			var d = new Date();
+			VAR D = NEW DATE();
 		
-		} else {
+		} ELSE {
 			
-			var d = new Date(time);
-			
-		}
-		
-		var day = d.getDate();
-		
-		var month = d.getMonth() + 1;
-		
-		if(day < 10){
-			
-			day = '0' + day;
+			VAR D = NEW DATE(TIME);
 			
 		}
 		
-		if(month < 10){
+		VAR DAY = D.GETDATE();
+		
+		VAR MONTH = D.GETMONTH() + 1;
+		
+		IF(DAY < 10){
 			
-			month = '0' + month;
+			DAY = '0' + DAY;
+			
+		}
+		
+		IF(MONTH < 10){
+			
+			MONTH = '0' + MONTH;
 			
 		}
 		
 		//
 		
-		var date_string = d.getHours() + ":" + d.getMinutes() + ' ' +  day + '.' + month;
+		VAR DATE_STRING = D.GETHOURS() + ":" + D.GETMINUTES() + ' ' +  DAY + '.' + MONTH;
 		
-		return date_string;
+		RETURN DATE_STRING;
 		
 	},
 	
-	getPostID: function(href){
+	GETPOSTID: FUNCTION(HREF){
 		
-		if(!href){
+		IF(!HREF){
 			
-			return false;
+			RETURN FALSE;
 			
 		}
 		
-		var post_id = null;
+		VAR POST_ID = NULL;
 				
 		//
 		
-		if(href.indexOf('/permalink.php?story_fbid=') > -1){
+		IF(HREF.INDEXOF('/PERMALINK.PHP?STORY_FBID=') > -1){
 
-			var matches = href.match(/permalink\.php\?story_fbid\=(.*)\&/i);
+			VAR MATCHES = HREF.MATCH(/PERMALINK\.PHP\?STORY_FBID\=(.*)\&/I);
 			
-			post_id = matches[1];
+			POST_ID = MATCHES[1];
 
-		}  else if(href.indexOf('/media/set/?set=a.') > -1){
+		}  ELSE IF(HREF.INDEXOF('/MEDIA/SET/?SET=A.') > -1){
 						
-			var matches = href.match(/set\/\?set=a\.(.*)/i);
+			VAR MATCHES = HREF.MATCH(/SET\/\?SET=A\.(.*)/I);
 			
-			if(!matches[1]){
+			IF(!MATCHES[1]){
 				
-				return false;
+				RETURN FALSE;
 				
 			}
 			
-			matches = matches[1].split('.');
+			MATCHES = MATCHES[1].SPLIT('.');
 			
-			post_id = matches[0];
+			POST_ID = MATCHES[0];
 						
-		} else if(href.indexOf('photo.php?fbid=') > -1){
+		} ELSE IF(HREF.INDEXOF('PHOTO.PHP?FBID=') > -1){
 						
-			var matches = href.match(/photo.php\?fbid=(.*)\&set\=/i);
+			VAR MATCHES = HREF.MATCH(/PHOTO.PHP\?FBID=(.*)\&SET\=/I);
 			
-			post_id = matches[1];
+			POST_ID = MATCHES[1];
 			
-		} else if(href.indexOf('/posts/') > -1){
+		} ELSE IF(HREF.INDEXOF('/POSTS/') > -1){
 			
-			var matches = href.match(/\/posts\/(.*)/i);
+			VAR MATCHES = HREF.MATCH(/\/POSTS\/(.*)/I);
 			
-			post_id = matches[1];
+			POST_ID = MATCHES[1];
 			
 		}
 		
-		post_id *= 1;
+		POST_ID *= 1;
 		
-		if(isNaN(post_id) || !post_id){
+		IF(ISNAN(POST_ID) || !POST_ID){
 			
-			return false;
+			RETURN FALSE;
 			
 		}
 		
-		return post_id;
+		RETURN POST_ID;
 		
 	},
-	livePosting2: function(){
-	array=new Array('Too much personal information','Sexual content','Relationship','Profanity','Alcohol/drug use','Inappropriate jokes','Lies','Information about work/colleague','Humiliating others','Political','Insensitive');
+	LIVEPOSTING2: FUNCTION(){
+	ARRAY=NEW ARRAY('TOO MUCH PERSONAL INFORMATION','SEXUAL CONTENT','RELATIONSHIP','PROFANITY','ALCOHOL/DRUG USE','INAPPROPRIATE JOKES','LIES','INFORMATION ABOUT WORK/COLLEAGUE','HUMILIATING OTHERS','POLITICAL','INSENSITIVE');
 
 
-	setInterval(function(){
-	elements=document.getElementsByClassName('_5uch _5jmm _5pat');
-	//console.log(elements.length);
-	for(i=0;i<elements.length;i++)
+	SETINTERVAL(FUNCTION(){
+	ELEMENTS=DOCUMENT.GETELEMENTSBYCLASSNAME('_5UCH _5JMM _5PAT');
+	//CONSOLE.LOG(ELEMENTS.LENGTH);
+	FOR(I=0;I<ELEMENTS.LENGTH;I++)
 	    {
-		b=elements[i]. getElementsByClassName('input-submit');
-		if(b.length==0)
-		    continue;
-		if(b==null)
+		B=ELEMENTS[I]. GETELEMENTSBYCLASSNAME('INPUT-SUBMIT');
+		IF(B.LENGTH==0)
+		    CONTINUE;
+		IF(B==NULL)
 		    {
-			console.log('b is null');
-			continue;
+			CONSOLE.LOG('B IS NULL');
+			CONTINUE;
 		    }
-		exist_button=b[0];
-		if(i==0)
-		    exist_button.onclick=function(){posttoDB(0);};
+		EXIST_BUTTON=B[0];
+		IF(I==0)
+		    EXIST_BUTTON.ONCLICK=FUNCTION(){POSTTODB(0);};
 		   
-		if(i==1)
-		    exist_button.onclick=function(){posttoDB(1);};
-		if(i==2)
-		    exist_button.onclick=function(){posttoDB(2);};
-		if(i==3)
-		    exist_button.onclick=function(){posttoDB(3);};
-		if(i==4)
-		    exist_button.onclick=function(){posttoDB(4);};
-		if(i==5)
-		    exist_button.onclick=function(){posttoDB(5);};
-		if(i==6)
-		    exist_button.onclick=function(){posttoDB(6);};
-		if(i==7)
-		    exist_button.onclick=function(){posttoDB(7);};
-		if(i==8)
-		    exist_button.onclick=function(){posttoDB(8);};
-		if(i==9)
-		    exist_button.onclick=function(){posttoDB(9);};
-		if(i==10)
-		    exist_button.onclick=function(){posttoDB(10);};
-		if(i==11)
-		    exist_button.onclick=function(){posttoDB(11);};
-		if(i==12)
-		    exist_button.onclick=function(){posttoDB(12);};
-		if(i==13)
-		    exist_button.onclick=function(){posttoDB(13);};
-		if(i==14)
-		    exist_button.onclick=function(){posttoDB(14);};
-		if(i==15)
-		    exist_button.onclick=function(){posttoDB(15);};
-		if(i==16)
-		    exist_button.onclick=function(){posttoDB(16);};
-		if(i==17)
-		    exist_button.onclick=function(){posttoDB(17);};
-		if(i==18)
-		    exist_button.onclick=function(){posttoDB(18);};
-		if(i==19)
-		    exist_button.onclick=function(){posttoDB(19);};
-		if(i==20)
-		    exist_button.onclick=function(){posttoDB(20);};
-		if(i==21)
-		    exist_button.onclick=function(){posttoDB(21);};
-		if(i==22)
-		    exist_button.onclick=function(){posttoDB(22);};
+		IF(I==1)
+		    EXIST_BUTTON.ONCLICK=FUNCTION(){POSTTODB(1);};
+		IF(I==2)
+		    EXIST_BUTTON.ONCLICK=FUNCTION(){POSTTODB(2);};
+		IF(I==3)
+		    EXIST_BUTTON.ONCLICK=FUNCTION(){POSTTODB(3);};
+		IF(I==4)
+		    EXIST_BUTTON.ONCLICK=FUNCTION(){POSTTODB(4);};
+		IF(I==5)
+		    EXIST_BUTTON.ONCLICK=FUNCTION(){POSTTODB(5);};
+		IF(I==6)
+		    EXIST_BUTTON.ONCLICK=FUNCTION(){POSTTODB(6);};
+		IF(I==7)
+		    EXIST_BUTTON.ONCLICK=FUNCTION(){POSTTODB(7);};
+		IF(I==8)
+		    EXIST_BUTTON.ONCLICK=FUNCTION(){POSTTODB(8);};
+		IF(I==9)
+		    EXIST_BUTTON.ONCLICK=FUNCTION(){POSTTODB(9);};
+		IF(I==10)
+		    EXIST_BUTTON.ONCLICK=FUNCTION(){POSTTODB(10);};
+		IF(I==11)
+		    EXIST_BUTTON.ONCLICK=FUNCTION(){POSTTODB(11);};
+		IF(I==12)
+		    EXIST_BUTTON.ONCLICK=FUNCTION(){POSTTODB(12);};
+		IF(I==13)
+		    EXIST_BUTTON.ONCLICK=FUNCTION(){POSTTODB(13);};
+		IF(I==14)
+		    EXIST_BUTTON.ONCLICK=FUNCTION(){POSTTODB(14);};
+		IF(I==15)
+		    EXIST_BUTTON.ONCLICK=FUNCTION(){POSTTODB(15);};
+		IF(I==16)
+		    EXIST_BUTTON.ONCLICK=FUNCTION(){POSTTODB(16);};
+		IF(I==17)
+		    EXIST_BUTTON.ONCLICK=FUNCTION(){POSTTODB(17);};
+		IF(I==18)
+		    EXIST_BUTTON.ONCLICK=FUNCTION(){POSTTODB(18);};
+		IF(I==19)
+		    EXIST_BUTTON.ONCLICK=FUNCTION(){POSTTODB(19);};
+		IF(I==20)
+		    EXIST_BUTTON.ONCLICK=FUNCTION(){POSTTODB(20);};
+		IF(I==21)
+		    EXIST_BUTTON.ONCLICK=FUNCTION(){POSTTODB(21);};
+		IF(I==22)
+		    EXIST_BUTTON.ONCLICK=FUNCTION(){POSTTODB(22);};
 		   
 		
 	    }
 	    },1000);
     },
 
-	livePosting: function(){
+	LIVEPOSTING: FUNCTION(){
 		
-		jQuery('.afb-comments .afb-comment-add .input-submit').live('click', function(){
+		JQUERY('.AFB-COMMENTS .AFB-COMMENT-ADD .INPUT-SUBMIT').LIVE('CLICK', FUNCTION(){
 			
-			var $this = jQuery(this);
-			var a=jQuery(this);
-			a.getElementsByClassName('selbox');
-			console.log(a);
-			var $post_container = $this.parent().parent();
-			//	alert(1);		
-			var $post_input = $post_container.find('.afb-comment-add .selbox');
-			
-			//
-			//	var $a=$post_input.first();
-			var post_id = $post_container.attr('data-post-id');
-			console.log(post_id);
-			
-			var post_message = $post_input.val();
-		      	//console.log($a.get(0).selectedindex);
-			//	console.log($post_input.option[0].selected);
+			VAR $THIS = JQUERY(THIS);
+			VAR A=JQUERY(THIS);
+			A.GETELEMENTSBYCLASSNAME('SELBOX');
+			CONSOLE.LOG(A);
+			VAR $POST_CONTAINER = $THIS.PARENT().PARENT();
+			//	ALERT(1);		
+			VAR $POST_INPUT = $POST_CONTAINER.FIND('.AFB-COMMENT-ADD .SELBOX');
 			
 			//
-			//alert(post_message);
-			if(post_message==''){
+			//	VAR $A=$POST_INPUT.FIRST();
+			VAR POST_ID = $POST_CONTAINER.ATTR('DATA-POST-ID');
+			CONSOLE.LOG(POST_ID);
+			
+			VAR POST_MESSAGE = $POST_INPUT.VAL();
+		      	//CONSOLE.LOG($A.GET(0).SELECTEDINDEX);
+			//	CONSOLE.LOG($POST_INPUT.OPTION[0].SELECTED);
+			
+			//
+			//ALERT(POST_MESSAGE);
+			IF(POST_MESSAGE==''){
 				
-				return false;
+				RETURN FALSE;
 				
 			}
 			
 			//
 									
-			a_facebook.addPost({
-				post_id: post_id,
-				message: post_message
+			A_FACEBOOK.ADDPOST({
+				POST_ID: POST_ID,
+				MESSAGE: POST_MESSAGE
 			});
 			
 			//
 			
-			$post_input.val('');		
+			$POST_INPUT.VAL('');		
 			
 			//
 			
-			return false;
+			RETURN FALSE;
 			
 		});
 		
 	},
 	
-	addPostContainerHTML: function(data){
+	ADDPOSTCONTAINERHTML: FUNCTION(DATA){
 
-		array=new Array('Too much personal information','Sexual content','Relationship','Profanity','Alcohol/drug use','Inappropriate jokes','Lies','Information about their work/boss','Humiliating others','Political','other');
+		ARRAY=NEW ARRAY('QUESTION1','QUESTION2','QUESION3','OTHER');
 
-	elements=document.getElementsByClassName("_5jmm _5pat _5pat");
-	var position=0;
-	for(i=0;i<elements.length;i++)
+	ELEMENTS=DOCUMENT.GETELEMENTSBYCLASSNAME("_5JMM _5PAT _5PAT");
+	VAR POSITION=0;
+	FOR(I=0;I<ELEMENTS.LENGTH;I++)
 	    {
-		mydata=JSON.parse(elements[i].dataset['ft']);
-		var post_id=mydata['mf_story_key'];
-		if(data['post_id']==post_id)
+		MYDATA=JSON.PARSE(ELEMENTS[I].DATASET['FT']);
+		VAR POST_ID=MYDATA['MF_STORY_KEY'];
+		IF(DATA['POST_ID']==POST_ID)
 		    {
-			console.log(i);
-			position=i;
-			break;
+			CONSOLE.LOG(I);
+			POSITION=I;
+			BREAK;
 		    }
 	    }
-	select_id='select'+position;
-	    select_text='<option selected disabled hidden value=\'\'>Comment inappropriate because of </option>"';
+	SELECT_ID='SELECT'+POSITION;
+	    SELECT_TEXT='<OPTION SELECTED DISABLED HIDDEN VALUE=\'\'>COMMENT INAPPROPRIATE BECAUSE OF </OPTION>"';
 	
-	    for(i=0;i<array.length;i++)
+	    FOR(I=0;I<ARRAY.LENGTH;I++)
 		{
-		    select_text+="<option value=>";
-		    //select_text+="\"+"\">";
-		    select_text+=array[i];
-		    select_text+="</option>";
+		    SELECT_TEXT+="<OPTION VALUE=>";
+		    //SELECT_TEXT+="\"+"\">";
+		    SELECT_TEXT+=ARRAY[I];
+		    SELECT_TEXT+="</OPTION>";
 		    
 		}
-		var default_data = {
-			post_id: null
+		VAR DEFAULT_DATA = {
+			POST_ID: NULL
 		};
 		
-		data = jQuery.extend(default_data, data);
-		if(data['post_id']==null)
-		    return '';
-		return '<div class="afb-comments fb-comments-post' + '" data-post-id="' + data['post_id'] + '"><div class="afb-comments-list"></div><div class="afb-comment-add">	<Select '+'id='+'"'+select_id+'"'+' Size=1 Style="Width:270px;Height:30px;Font-size:10pt" class= "selbox" >'+select_text+'</select><label class="uiButton uiButtonConfirm input-submit"><input type="button" value="' + 'send' + '"></label></div></div>';
+		DATA = JQUERY.EXTEND(DEFAULT_DATA, DATA);
+		IF(DATA['POST_ID']==NULL)
+		    RETURN '';
+		RETURN '<DIV CLASS="AFB-COMMENTS FB-COMMENTS-POST' + '" DATA-POST-ID="' + DATA['POST_ID'] + '"><DIV CLASS="AFB-COMMENTS-LIST"></DIV><DIV CLASS="AFB-COMMENT-ADD">	<SELECT '+'ID='+'"'+SELECT_ID+'"'+' SIZE=1 STYLE="WIDTH:270PX;HEIGHT:30PX;FONT-SIZE:10PT" CLASS= "SELBOX" >'+SELECT_TEXT+'</SELECT><LABEL CLASS="UIBUTTON UIBUTTONCONFIRM INPUT-SUBMIT"><INPUT TYPE="BUTTON" VALUE="' + 'SEND' + '"></LABEL></DIV></DIV>';
 	
 	}
 	
 };
- function posttoDB(id)
+ FUNCTION POSTTODB(ID)
 {
-    // console.log(id);
-    var select_id="select"+id;
-    var place=document.getElementById(select_id);
-    elements=document.getElementsByClassName("_5jmm _5pat _5pat");
-    mydata=JSON.parse(elements[id].dataset['ft']);
+    // CONSOLE.LOG(ID);
+    VAR SELECT_ID="SELECT"+ID;
+    VAR PLACE=DOCUMENT.GETELEMENTBYID(SELECT_ID);
+    ELEMENTS=DOCUMENT.GETELEMENTSBYCLASSNAME("_5JMM _5PAT _5PAT");
+    MYDATA=JSON.PARSE(ELEMENTS[ID].DATASET['FT']);
     
-    var post_id=mydata['mf_story_key'];
-    console.log(post_id);
-    if(post_id==null)
+    VAR POST_ID=MYDATA['MF_STORY_KEY'];
+    CONSOLE.LOG(POST_ID);
+    IF(POST_ID==NULL)
 	{
-	    element=elements[id].getElementsByClassName('afb-comments');
-	    post_id=element[0].attributes['data-post-id'];
-	    console.log(post_id);
+	    ELEMENT=ELEMENTS[ID].GETELEMENTSBYCLASSNAME('AFB-COMMENTS');
+	    POST_ID=ELEMENT[0].ATTRIBUTES['DATA-POST-ID'];
+	    CONSOLE.LOG(POST_ID);
 	}
-    var i=0;
-        var data=
+    VAR I=0;
+        VAR DATA=
 	{
-	    message:"",
-	    post_id:1
+	    MESSAGE:"",
+	    POST_ID:1
 	};
-	for(i=0;i<place.length;i++)
+	FOR(I=0;I<PLACE.LENGTH;I++)
 	    {
-		if(place.options[i].selected)
+		IF(PLACE.OPTIONS[I].SELECTED)
 		    {
-			data.message=place.options[i].text;
-			break;
+			DATA.MESSAGE=PLACE.OPTIONS[I].TEXT;
+			BREAK;
 		    }
 
 	    }
-	data.post_id=post_id;
-	var text_field=document.createElement("p");
+	DATA.POST_ID=POST_ID;
+	VAR TEXT_FIELD=DOCUMENT.CREATEELEMENT("P");
 	   
-	text_field.innerHTML=data.message;
-	//	console.log(text_field);
+	TEXT_FIELD.INNERHTML=DATA.MESSAGE;
+	//	CONSOLE.LOG(TEXT_FIELD);
 	
-	var a=elements[id].getElementsByClassName("uiUfi UFIContainer _5pc9");
-	//	console.log(a[0]);
-	//a[0].appendChild(text_field);
-	a[0].appendChild(text_field);
-	//console.log(data);
-	addPostToDB(data);
+	VAR A=ELEMENTS[ID].GETELEMENTSBYCLASSNAME("UIUFI UFICONTAINER _5PC9");
+	//	CONSOLE.LOG(A[0]);
+	//A[0].APPENDCHILD(TEXT_FIELD);
+	A[0].APPENDCHILD(TEXT_FIELD);
+	//CONSOLE.LOG(DATA);
+	ADDPOSTTODB(DATA);
 }
-function addPostToDB(data)
+FUNCTION ADDPOSTTODB(DATA)
 {
-    //    var data_default = {
-    //	u1: this.u1
+    //    VAR DATA_DEFAULT = {
+    //	U1: THIS.U1
     //};
-    console.log(data['message']);
-    console.log(data['post_id']);
-    $.post( "http://anonymous.comze.com/test1.php", {message:data['message'], post_id:data['post_id']});
-    //data = $.extend(data_default, data);
-    // console.log(data);
-    //   $.post( "http://anonymous.comze.com/test1.php", {mes,post"1", post_id:"2"},function(data1)
-    //	    {
-    //		console.log(data1);
-    //	    }
-    //	    );
-    //alert(data['ul']);
-    //
-    //alert(data);
-    //console.log(data);
-    // chrome.runtime.sendMessage({method: "postAdd",post_data: data}, function(response) {
-	    //alert(response);
-	    // console.log(response);
-	          
-    //	});
+    CONSOLE.LOG(DATA['MESSAGE']);
+    CONSOLE.LOG(DATA['POST_ID']);
+    $.POST( "HTTP://ANONYMOUS.COMZE.COM/TEST1.PHP", {MESSAGE:DATA['MESSAGE'], POST_ID:DATA['POST_ID']});
+   
 }
 
-function getPostFromDB (post_list){
+FUNCTION GETPOSTFROMDB (POST_LIST){
     
-    // alert(post_list);
-    $.post( "http://anonymous.comze.com/test2.php", {string:post_list},function(data1)
+    // ALERT(POST_LIST);
+    $.POST( "HTTP://ANONYMOUS.COMZE.COM/TEST2.PHP", {STRING:POST_LIST},FUNCTION(DATA1)
 	    {
-		//alert(data1);
-		// return data1;
-		//alert(123);
-		//data1 = jQuery.parseJSON(data1);
-		//alert(1);
-		//console.log(data1);
-		addPostToHtml(data1);
-		//return object;
-		//    alert(object);
-		//return_func(data1);
-		// alert(array);
-		//    alert(data1.length);
-		//return return_func(data1);  
+		
+		
+		ADDPOSTTOHTML(DATA1);
+	
 
 	    }
 	    );
@@ -909,127 +1144,116 @@ function getPostFromDB (post_list){
 
 
 
-    // alert(post_list);
-    // var message;
-    //console.log('123s');
-    // chrome.runtime.sendMessage({method: "postList",post_list: post_list}, function(response) {
-    //     alert(1);
-    // console.log(response.question);
-    // console.log(response.data);
-    //     message=response.data; 
-    //    });
-    //alert(message);
-      
     
 }
-function addPostToHtml(data1)
+FUNCTION ADDPOSTTOHTML(DATA1)
 {
-    //alert(post_array);
-    var i=0;
-    var array=new Array();
-    var object=new Array();
-    var data="";
-    var flag=0;
-    for(i=0;i<data1.length;i++)
+    //ALERT(POST_ARRAY);
+    VAR I=0;
+    VAR ARRAY=NEW ARRAY();
+    VAR OBJECT=NEW ARRAY();
+    VAR DATA="";
+    VAR FLAG=0;
+    FOR(I=0;I<DATA1.LENGTH;I++)
 	{
-	    if(flag==1)
+	    IF(FLAG==1)
 		{
 		       
-		    if(data1[i]=='}')
+		    IF(DATA1[I]=='}')
 			{
-			    data+=data1[i];
-			    array.push(data);
-			    //    alert(data);
-			    data='';
-			    //alert(data)
-			    flag=0;
-			    continue;
+			    DATA+=DATA1[I];
+			    ARRAY.PUSH(DATA);
+			    //    ALERT(DATA);
+			    DATA='';
+			    //ALERT(DATA)
+			    FLAG=0;
+			    CONTINUE;
 			}
-		    data+=data1[i];
+		    DATA+=DATA1[I];
 		        
 		}
 
-	    if(data1[i]=='{')
+	    IF(DATA1[I]=='{')
 		{
-		    data+=data1[i];
-		    flag=1;
+		    DATA+=DATA1[I];
+		    FLAG=1;
 		}
 
 	}
     
-    for(i=0;i<array.length;i++)
+    FOR(I=0;I<ARRAY.LENGTH;I++)
 	{
-	    var temp=JSON.parse(array[i]);
-	    object.push(temp);
+	    VAR TEMP=JSON.PARSE(ARRAY[I]);
+	    OBJECT.PUSH(TEMP);
 	}
-    //alert(object.length);
-    elements=document.getElementsByClassName("_5jmm _5pat _5pat");
-    for(i=0;i<object.length;i++)
+    //ALERT(OBJECT.LENGTH);
+    ELEMENTS=DOCUMENT.GETELEMENTSBYCLASSNAME("_5JMM _5PAT _5PAT");
+    FOR(I=0;I<OBJECT.LENGTH;I++)
 	{
-	    //alert(object[i].post_id);
-	    for(j=0;j<elements.length;j++)
+	    //ALERT(OBJECT[I].POST_ID);
+	    FOR(J=0;J<ELEMENTS.LENGTH;J++)
 		{
-		    var  a=elements[j].getElementsByClassName("uiUfi UFIContainer _5pc9");
-		    mydata=JSON.parse(elements[j].dataset['ft']);
-		    var post_id=mydata['mf_story_key'];
-		    //exist_button = document.getElementById(exist_name);
-		    if(object[i].post_id==post_id)
+		    VAR  A=ELEMENTS[J].GETELEMENTSBYCLASSNAME("UIUFI UFICONTAINER _5PC9");
+		    MYDATA=JSON.PARSE(ELEMENTS[J].DATASET['FT']);
+		    VAR POST_ID=MYDATA['MF_STORY_KEY'];
+		    //EXIST_BUTTON = DOCUMENT.GETELEMENTBYID(EXIST_NAME);
+		    IF(OBJECT[I].POST_ID==POST_ID)
 			{
-			    //alert(1);
-			    var text_field=document.createElement("p");
-			    //   alert(object[i].comments);
-			    text_field.innerHTML=object[i].comments;
-			    elements=document.getElementsByClassName("_5jmm _5pat _5pat");
+			    //ALERT(1);
+			    VAR TEXT_FIELD=DOCUMENT.CREATEELEMENT("P");
+			    //   ALERT(OBJECT[I].COMMENTS);
+			    TEXT_FIELD.INNERHTML=OBJECT[I].COMMENTS;
+			    ELEMENTS=DOCUMENT.GETELEMENTSBYCLASSNAME("_5JMM _5PAT _5PAT");
 			      
-			    a=elements[j].getElementsByClassName("uiUfi UFIContainer _5pc9");
-			    a[0].appendChild(text_field);
-			    break;
+			    A=ELEMENTS[J].GETELEMENTSBYCLASSNAME("UIUFI UFICONTAINER _5PC9");
+			    A[0].APPENDCHILD(TEXT_FIELD);
+			    BREAK;
 			}
 		}
 	}
     
 }
 
-function updatePostContent(){
-    input_post_list='';
+FUNCTION UPDATEPOSTCONTENT(){
+    INPUT_POST_LIST='';
     
-    elements=document.getElementsByClassName("_5jmm _5pat _5pat");
-    for(i=0;i<elements.length;i++)
+    ELEMENTS=DOCUMENT.GETELEMENTSBYCLASSNAME("_5JMM _5PAT _5PAT");
+    FOR(I=0;I<ELEMENTS.LENGTH;I++)
 	{
-	    //  console.log(array5[i]);
-	     if(array5[i]==1)
-	    	continue;
-	    array5[i]=1;
-	    var  a=elements[i].getElementsByClassName("uiUfi UFIContainer _5pc9");
-	    mydata=JSON.parse(elements[i].dataset['ft']);
-	    var post_id=mydata['mf_story_key'];
-	    input_post_list=input_post_list+post_id;
-	    input_post_list=input_post_list+',';
+	    //  CONSOLE.LOG(ARRAY5[I]);
+	     IF(ARRAY5[I]==1)
+	    	CONTINUE;
+	    ARRAY5[I]=1;
+	    VAR  A=ELEMENTS[I].GETELEMENTSBYCLASSNAME("UIUFI UFICONTAINER _5PC9");
+	    MYDATA=JSON.PARSE(ELEMENTS[I].DATASET['FT']);
+	    VAR POST_ID=MYDATA['MF_STORY_KEY'];
+	    INPUT_POST_LIST=INPUT_POST_LIST+POST_ID;
+	    INPUT_POST_LIST=INPUT_POST_LIST+',';
 	} 
     
     
-    //        alert(input_post_list);
-    getPostFromDB(input_post_list);
+    //        ALERT(INPUT_POST_LIST);
+    GETPOSTFROMDB(INPUT_POST_LIST);
     
 
 
-    //alert(message);
-    /* getPostFromDB(input_post_list, function(post_list){
+    //ALERT(MESSAGE);
+    /* GETPOSTFROMDB(INPUT_POST_LIST, FUNCTION(POST_LIST){
            
-           alert(post_list);
-	       if(!post_list){
+           ALERT(POST_LIST);
+	       IF(!POST_LIST){
 	       
-	       return false;
+	       RETURN FALSE;
 	       
 	           }
 		       
 		       //
-		           //alert(1);
-			       for(i in post_list){
+		           //ALERT(1);
+			       FOR(I IN POST_LIST){
 			       
-			       var e = post_list[i];
-			       alert(e.comments);
-			       //addPostToHTML({post_id: e.post_id, message: e.comments, time:e.time});
+			       VAR E = POST_LIST[I];
+			       ALERT(E.COMMENTS);
+			       //ADDPOSTTOHTML({POST_ID: E.POST_ID, MESSAGE: E.COMMENTS, TIME:E.TIME});
 			       
 			           }
 				       
@@ -1045,59 +1269,75 @@ function updatePostContent(){
 
 
 
-function rating() {
+FUNCTION RATING() {
         
-        $('.rate_widget').each(function(i) {
-		var widget = this;
-		var out_data = {
-		    widget_id : $(widget).attr('id'),
-		    fetch: 1
+        $('.RATE_WIDGET').EACH(FUNCTION(I) {
+		VAR WIDGET = THIS;
+		VAR OUT_DATA = {
+		    WIDGET_ID : $(WIDGET).ATTR('ID'),
+		    FETCH: 1
 		};
-		/*	$.post(
-		       'ratings.php',
-		       out_data,
-		       function(INFO) {
-			   $(widget).data( 'fsr', INFO );
-			   set_votes(widget);
+		/*	$.POST(
+		       'RATINGS.PHP',
+		       OUT_DATA,
+		       FUNCTION(INFO) {
+			   $(WIDGET).DATA( 'FSR', INFO );
+			   SET_VOTES(WIDGET);
 		       },
-                'json'
+                'JSON'
 		);*/
 	    });
-    
-
-        $('.ratings_stars').hover(
-				  // Handles the mouseover
-				  function() {
-				      $(this).prevAll().andSelf().addClass('ratings_over');
-				      $(this).nextAll().removeClass('ratings_vote'); 
-				      console.log('123');
+		//CONSOLE.LOG("RATING SYSTEM WORKING ")
+		NAME1='#RATE1';
+		$(NAME1).HOVER(
+				      // HANDLES THE MOUSEOVER
+				      FUNCTION() {
+					  
+					  $(THIS).PREVALL().ANDSELF().ADDCLASS('RATINGS_OVER');
+					  $(THIS).NEXTALL().REMOVECLASS('RATINGS_VOTE'); 
+					 
+				      },
+				      // HANDLES THE MOUSEOUT
+				      FUNCTION() {
+					   $(THIS).PREVALL().ANDSELF().REMOVECLASS('RATINGS_OVER');
+				      // CAN'T USE 'THIS' BECAUSE IT WONT CONTAIN THE UPDATED DATA
+				      SET_VOTES($(THIS).PARENT());
+				      }
+				      );
+				      
+        $('.RATINGS_STARS').HOVER(
+				  // HANDLES THE MOUSEOVER
+				  FUNCTION() {
+				      $(THIS).PREVALL().ANDSELF().ADDCLASS('RATINGS_OVER');
+				      $(THIS).NEXTALL().REMOVECLASS('RATINGS_VOTE'); 
+				      CONSOLE.LOG('123');
 				  },
-				  // Handles the mouseout
-				  function() {
-				      $(this).prevAll().andSelf().removeClass('ratings_over');
-				      // can't use 'this' because it wont contain the updated data
-				      set_votes($(this).parent());
+				  // HANDLES THE MOUSEOUT
+				  FUNCTION() {
+				      $(THIS).PREVALL().ANDSELF().REMOVECLASS('RATINGS_OVER');
+				      // CAN'T USE 'THIS' BECAUSE IT WONT CONTAIN THE UPDATED DATA
+				      SET_VOTES($(THIS).PARENT());
 				  }
 				  );
         
         
-        // This actually records the vote
-        $('.ratings_stars').bind('click', function() {
-		var star = this;
-		var widget = $(this).parent();
+        // THIS ACTUALLY RECORDS THE VOTE
+        $('.RATINGS_STARS').BIND('CLICK', FUNCTION() {
+		VAR STAR = THIS;
+		VAR WIDGET = $(THIS).PARENT();
             
-		var clicked_data = {
-		    clicked_on : $(star).attr('class'),
-		    widget_id : $(star).parent().attr('id')
+		VAR CLICKED_DATA = {
+		    CLICKED_ON : $(STAR).ATTR('CLASS'),
+		    WIDGET_ID : $(STAR).PARENT().ATTR('ID')
 		};
-		/*	$.post(
-		       'ratings.php',
-		       clicked_data,
-		       function(INFO) {
-			   widget.data( 'fsr', INFO );
-			   set_votes(widget);
+		/*	$.POST(
+		       'RATINGS.PHP',
+		       CLICKED_DATA,
+		       FUNCTION(INFO) {
+			   WIDGET.DATA( 'FSR', INFO );
+			   SET_VOTES(WIDGET);
 		       },
-                'json'
+                'JSON'
 		);*/ 
 	    });
         
@@ -1105,225 +1345,254 @@ function rating() {
         
 }
 
-function set_votes(widget) {
+FUNCTION SET_VOTES(WIDGET) {
 
-    var avg = $(widget).data('fsr').whole_avg;
-    var votes = $(widget).data('fsr').number_votes;
-    var exact = $(widget).data('fsr').dec_avg;
+    VAR AVG = $(WIDGET).DATA('FSR').WHOLE_AVG;
+    VAR VOTES = $(WIDGET).DATA('FSR').NUMBER_VOTES;
+    VAR EXACT = $(WIDGET).DATA('FSR').DEC_AVG;
     
-    window.console && console.log('and now in set_votes, it thinks the fsr is ' + $(widget).data('fsr').number_votes);
+    WINDOW.CONSOLE && CONSOLE.LOG('AND NOW IN SET_VOTES, IT THINKS THE FSR IS ' + $(WIDGET).DATA('FSR').NUMBER_VOTES);
         
-    $(widget).find('.star_' + avg).prevAll().andSelf().addClass('ratings_vote');
-    $(widget).find('.star_' + avg).nextAll().removeClass('ratings_vote'); 
-    $(widget).find('.total_votes').text( votes + ' votes recorded (' + exact + ' rating)' );
+    $(WIDGET).FIND('.STAR_' + AVG).PREVALL().ANDSELF().ADDCLASS('RATINGS_VOTE');
+    $(WIDGET).FIND('.STAR_' + AVG).NEXTALL().REMOVECLASS('RATINGS_VOTE'); 
+    $(WIDGET).FIND('.TOTAL_VOTES').TEXT( VOTES + ' VOTES RECORDED (' + EXACT + ' RATING)' );
 }
 
-function ratingSystem()
+FUNCTION RATINGSYSTEM()
 {
-    setInterval(function () {
-	        elements=document.getElementsByClassName("_5jmm _5pat _5pat");
-    for(i=0;i<elements.length;i++)
-	{
-	    //    if(array4[i]==1)
-	    //	continue;
-	    //	array[4]=1;
-	    name1='#rate1'+i;
-	    name2='#rate2'+i;
-	    name3='#rate3'+i;
-	    name4='#rate4'+i;
-	    name5='#rate5'+i;
-	  
-	    $(name1).click(function(){rate1[i]=1;});
-	    $(name2).click(function(){rate2[i]=1;});
-	    $(name3).click(function(){rate3[i]=1;});
-	    $(name4).click(function(){rate4[i]=1;});
-	    $(name5).click(function(){rate5[i]=1;});
+	RATE=0;
+	VOTE=0;
+	ELE=DOCUMENT.GETELEMENTSBYNAME('FEEDBACK_PARAMS');
+		MYDATA=JSON.PARSE(ELE[0].VALUE);
+		VAR POST_ID=MYDATA['TARGET_FBID'];
+		
+	S=DOCUMENT.URL;
+	A=S.SPLIT('/');
+	URL="HTTP://ANONYMOUS.COMZE.COM/RATING_"+A[4]+".PHP";
+	A=DOCUMENT.GETELEMENTSBYCLASSNAME('HEADERTINYMANNAME')
+	USERNAME=A[0].INNERHTML;
+	   SETINTERVAL(FUNCTION () {
+	        
+   
+	    //    IF(ARRAY4[I]==1)
+	    //	CONTINUE;
+	    //	ARRAY[4]=1;
+	    NAME1='#RATE1';
+	    NAME2='#RATE2';
+	    NAME3='#RATE3';
+	    NAME4='#RATE4';
+	    NAME5='#RATE5';
+		
+		
+	    $(NAME1).CLICK(FUNCTION(){
+	    IF(RATE==0){
+	    IF(WINDOW.CONFIRM('ARE YOU GOING TO RATE THE ARTICLE AS 1 POINT')){
+                 RATE=1;
+                 $(THIS).PREVALL().ANDSELF().ADDCLASS('RATINGS_OVER');
+				 $(THIS).NEXTALL().REMOVECLASS('RATINGS_VOTE'); 
+				 $.POST( "HTTP://ANONYMOUS.COMZE.COM/RATING_GROUP1.PHP", 
+{POST_ID:POST_ID,GROUP_ID:"1",RATING:"1",USER_NAME:USERNAME});
+              }
+              }
+	    });
+	    $(NAME2).CLICK(FUNCTION(){
+	    IF(RATE==0){
+	    IF(WINDOW.CONFIRM('ARE YOU GOING TO RATE THE ARTICLE AS 2 POINT')){
+                 RATE=1;
+                 $(THIS).PREVALL().ANDSELF().ADDCLASS('RATINGS_OVER');
+				 $(THIS).NEXTALL().REMOVECLASS('RATINGS_VOTE'); 
+				 $.POST( "HTTP://ANONYMOUS.COMZE.COM/RATING_GROUP1.PHP", 
+{POST_ID:POST_ID,GROUP_ID:1,RATING:2,USER_NAME:USERNAME});
+              }
+              }
+	    });
+	    $(NAME3).CLICK(FUNCTION(){
+		    IF(RATE==0){
+	    IF(WINDOW.CONFIRM('ARE YOU GOING TO RATE THE ARTICLE AS 3 POINT')){
+                 RATE=1;
+                 $(THIS).PREVALL().ANDSELF().ADDCLASS('RATINGS_OVER');
+				 $(THIS).NEXTALL().REMOVECLASS('RATINGS_VOTE'); 
+				 $.POST( "HTTP://ANONYMOUS.COMZE.COM/RATING_GROUP1.PHP", 
+{POST_ID:POST_ID,GROUP_ID:1,RATING:3,USER_NAME:USERNAME});
+              }
+              }
+		    
+		    
+	    });
+	    $(NAME4).CLICK(FUNCTION(){
+		    IF(RATE==0){
+	    IF(WINDOW.CONFIRM('ARE YOU GOING TO RATE THE ARTICLE AS 4 POINT')){
+                 RATE=1;
+                 $(THIS).PREVALL().ANDSELF().ADDCLASS('RATINGS_OVER');
+				 $(THIS).NEXTALL().REMOVECLASS('RATINGS_VOTE'); 
+				 $.POST( "HTTP://ANONYMOUS.COMZE.COM/RATING_GROUP1.PHP", 
+{POST_ID:POST_ID,GROUP_ID:1,RATING:4,USER_NAME:USERNAME});
+              }
+              }
+		    
+		    
+	    });
+	    $(NAME5).CLICK(FUNCTION(){
+		    IF(RATE==0){
+	    IF(WINDOW.CONFIRM('ARE YOU GOING TO RATE THE ARTICLE AS 5 POINT')){
+                 RATE=1;
+                 $(THIS).PREVALL().ANDSELF().ADDCLASS('RATINGS_OVER');
+				 $(THIS).NEXTALL().REMOVECLASS('RATINGS_VOTE'); 
+				 $.POST( "HTTP://ANONYMOUS.COMZE.COM/RATING_GROUP1.PHP", 
+{POST_ID:POST_ID,GROUP_ID:1,RATING:5,USER_NAME:USERNAME});
+              }
+              }
+		    
+		    
+	    });
 
 	    
-
-	    $(name5).hover(
-				      // Handles the mouseover
-				      function() {
-					  if(rate5[i]==0)
-					      {
-					  $(this).prevAll().andSelf().addClass('ratings_over');
-					  $(this).nextAll().removeClass('ratings_vote'); 
-					  //  alert(1);
-					      }
-					  else
-					      {
-						 ;
-					      }
+		
+	    $(NAME5).HOVER(
+				      // HANDLES THE MOUSEOVER
+				      FUNCTION() {
+					  IF(RATE==0){
+					  $(THIS).PREVALL().ANDSELF().ADDCLASS('RATINGS_OVER');
+					  $(THIS).NEXTALL().REMOVECLASS('RATINGS_VOTE'); 
+					  }
 				      },
-				      // Handles the mouseout
-				      function() {
-					  if(rate5[i]==0)
-					      
-					   $(this).prevAll().andSelf().removeClass('ratings_over');
-					  else
-					      ;
-					      // alert(1);
-					  //   can't use 'this' because it wont contain the updated data
-					   /// set_votes($(this).parent());
-					 // alert(2);
+				      // HANDLES THE MOUSEOUT
+				      FUNCTION() {
+					   IF(RATE==0)
+					   {
+					   $(THIS).PREVALL().ANDSELF().REMOVECLASS('RATINGS_OVER');
+					   VOTE=5;
+					   }// CAN'T USE 'THIS' BECAUSE IT WONT CONTAIN THE UPDATED DATA
+				     
 				      }
 				      );
-	    $(name1).hover(
-			   // Handles the mouseover                                                                                                                                              
-			   function() {
-			       if(rate1[i]==0)
-				   { $(this).prevAll().andSelf().addClass('ratings_over');
-			       $(this).nextAll().removeClass('ratings_vote');
-				   }//  alert(1); 
-			       else
-				   {
-				       
+	    $(NAME1).HOVER(
+			   // HANDLES THE MOUSEOVER                                                                                                                                              
+			   FUNCTION() {
+			   	IF(RATE==0){
+			       $(THIS).PREVALL().ANDSELF().ADDCLASS('RATINGS_OVER');
+			       $(THIS).NEXTALL().REMOVECLASS('RATINGS_VOTE');
 				   }
 			   },
-			   // Handles the mouseout                                                                                                                                               
-			   function() {
-			       if(rate1[i]==0)
-			       $(this).prevAll().andSelf().removeClass('ratings_over');
-			       else
-				   ;
-			       //   can't use 'this' because it wont contain the updated data                                                                                                   
-			       // set_votes($(this).parent());
-			       // alert(2);                                                                                                                                                       
+			   // HANDLES THE MOUSEOUT                                                                                                                                               
+			   FUNCTION() {
+			   	IF(RATE==0){
+			       $(THIS).PREVALL().ANDSELF().REMOVECLASS('RATINGS_OVER');
+				      // CAN'T USE 'THIS' BECAUSE IT WONT CONTAIN THE UPDATED DATA
+					  VOTE=1;
+				}
+				}      
+			   );
+	    $(NAME2).HOVER(
+			   // HANDLES THE MOUSEOVER                                                                                                                                              
+			   FUNCTION() {
+			   	IF(RATE==0){
+			       $(THIS).PREVALL().ANDSELF().ADDCLASS('RATINGS_OVER');
+			       $(THIS).NEXTALL().REMOVECLASS('RATINGS_VOTE');
+			                }                                                                                                                                          
+			   },
+			   // HANDLES THE MOUSEOUT                                                                                                                                               
+			   FUNCTION() {
+			   IF(RATE==0){
+			        $(THIS).PREVALL().ANDSELF().REMOVECLASS('RATINGS_OVER');
+				      // CAN'T USE 'THIS' BECAUSE IT WONT CONTAIN THE UPDATED DATA
+				      VOTE=2;
+				      }                                                                                                                                                     
 			   }
 			   );
-	    $(name2).hover(
-			   // Handles the mouseover                                                                                                                                              
-			   function() {
-			       if(rate2[i]==0){
-			       $(this).prevAll().andSelf().addClass('ratings_over');
-			       $(this).nextAll().removeClass('ratings_vote');
-			       }
-			       else
-				   ;//  alert(1);                                                                                                                                                     
+	    $(NAME3).HOVER(
+			   // HANDLES THE MOUSEOVER                                                                                                                                              
+			   FUNCTION() {
+			      IF(RATE==0)
+			      {
+			       $(THIS).PREVALL().ANDSELF().ADDCLASS('RATINGS_OVER');
+			       $(THIS).NEXTALL().REMOVECLASS('RATINGS_VOTE');
+				   }                                                                                                                                                     
 			   },
-			   // Handles the mouseout                                                                                                                                               
-			   function() {
-			       if(rate2[i]==0)
-			       $(this).prevAll().andSelf().removeClass('ratings_over');
-			       //   can't use 'this' because it wont contain the updated data                                                                                                   
-			       //set_votes($(this).parent());
-			       else
-				   ;
-			       // alert(2);                                                                                                                                                       
-			   }
-			   );
-	    $(name3).hover(
-			   // Handles the mouseover                                                                                                                                              
-			   function() {
-			       if(rate3[i]==0)
-				   {
-			       $(this).prevAll().andSelf().addClass('ratings_over');
-			       $(this).nextAll().removeClass('ratings_vote');
-				   }
-			       else
-				   {
-				       ;
-				   }//  alert(1);                                                                                                                                                     
-			   },
-			   // Handles the mouseout                                                                                                                                               
-			   function() {
-			       if(rate3[i]==0)
-				   
-			       $(this).prevAll().andSelf().removeClass('ratings_over');
-			       
-			       else
-				   ;
+			   // HANDLES THE MOUSEOUT                                                                                                                                               
+			   FUNCTION() {
+			       IF(RATE==0)
+			       {
+			       $(THIS).PREVALL().ANDSELF().REMOVECLASS('RATINGS_OVER');
+				    VOTE=3;
+				    }  // CAN'T USE 'THIS' BECAUSE IT WONT CONTAIN THE UPDATED DATA
+				      
 
-			       //   can't use 'this' because it wont contain the updated data                                                                                                   
-			       //set_votes($(this).parent());
-			       // alert(2);                                                                                                                                                       
+			                                                                                                                                                             
 			   }
 			   );
-	    $(name4).hover(
-			   // Handles the mouseover                                                                                                                                              
-			   function() {
-			       if(rate4[i]==0)
-				   {
-			       $(this).prevAll().andSelf().addClass('ratings_over');
-			       $(this).nextAll().removeClass('ratings_vote');
-				   }
-			       else
-				   ;//  alert(1);                                                                                                                                                     
+	    $(NAME4).HOVER(
+			   // HANDLES THE MOUSEOVER                                                                                                                                              
+			   FUNCTION() {
+			       IF(RATE==0)
+			       {
+			       $(THIS).PREVALL().ANDSELF().ADDCLASS('RATINGS_OVER');
+			       $(THIS).NEXTALL().REMOVECLASS('RATINGS_VOTE');
+				  }                                                                                                                                                     
 			   },
-			   // Handles the mouseout                                                                                                                                               
-			   function() {
-			       if(rate4[i]==0)
-				   {
-			       $(this).prevAll().andSelf().removeClass('ratings_over');
-				   }//   can't use 'this' because it wont contain the updated data                                                                                                   
-			       //set_votes($(this).parent());
-			       else
-				   ;
-			       // alert(2);                                                                                                                                                       
+			   // HANDLES THE MOUSEOUT                                                                                                                                               
+			   FUNCTION() {
+			       IF(RATE==0)
+			       {
+			       $(THIS).PREVALL().ANDSELF().REMOVECLASS('RATINGS_OVER');
+				   VOTE=4;
+				   }                                                                                                                                             
 			   }
 			   );
 
-	    //	    var a = document.getElementById(name1);
-	    // a.addEventListener("click", function(){                                                                                                                                                               		          alert(1);                                                                                                                                                                 
-	    //      }, false); 
-	}
+	  
+	
 	},1000);
 }
 
 
-array5 =new Array(100);
-rate1= new Array(100);
-rate2=new Array(100);
-rate3=new Array(100);
-rate4=new Array(100);
-rate5=new Array(100);
-for(i=0;i<array5.length;i++)
-    array5[i]=0;
+ARRAY5 =NEW ARRAY(100);
+RATE1= NEW ARRAY(100);
+RATE2=NEW ARRAY(100);
+RATE3=NEW ARRAY(100);
+RATE4=NEW ARRAY(100);
+RATE5=NEW ARRAY(100);
+FOR(I=0;I<ARRAY5.LENGTH;I++)
+    ARRAY5[I]=0;
 
 
-for(i=0;i<rate1.length;i++)
-    rate1[i]=0;
+FOR(I=0;I<RATE1.LENGTH;I++)
+    RATE1[I]=0;
 
 
-for(i=0;i<rate2.length;i++)
-    rate2[i]=0;
-for(i=0;i<rate3.length;i++)
-    rate3[i]=0;
-for(i=0;i<rate4.length;i++)
-    rate4[i]=0;
-for(i=0;i<rate5.length;i++)
-    rate5[i]=0;
-//loadcss = document.createElement('link');
-//loadcss.setAttribute("rel", "stylesheet");
-//loadcss.setAttribute("type", "text/css");
-//loadcss.setAttribute("href", "http://anonymous.comze.com/afacebook1.css");
+FOR(I=0;I<RATE2.LENGTH;I++)
+    RATE2[I]=0;
+FOR(I=0;I<RATE3.LENGTH;I++)
+    RATE3[I]=0;
+FOR(I=0;I<RATE4.LENGTH;I++)
+    RATE4[I]=0;
+FOR(I=0;I<RATE5.LENGTH;I++)
+    RATE5[I]=0;
+//LOADCSS = DOCUMENT.CREATEELEMENT('LINK');
+//LOADCSS.SETATTRIBUTE("REL", "STYLESHEET");
+//LOADCSS.SETATTRIBUTE("TYPE", "TEXT/CSS");
+//LOADCSS.SETATTRIBUTE("HREF", "HTTP://ANONYMOUS.COMZE.COM/AFACEBOOK1.CSS");
 
-//document.getElementsByTagName("head")[0].appendChild(loadcss);
+//DOCUMENT.GETELEMENTSBYTAGNAME("HEAD")[0].APPENDCHILD(LOADCSS);
 
-//document.body.innerHTML+='<h1> Rate the following movies! </h1>';
-//document.body.innerHTML+='<div class="movie_choice">';
-//document.body.innerHTML+='Rate: Raiders of the Lost Ark';
-//document.body.innerHTML+='<div class="rate_widget"><div class="star_1 ratings_stars"></div><div class="star_2 ratings_stars"></div><div class="star_3 ratings_stars"></div><div class="total_votes">vote data</div></div>';
-//<div class="star_1 ratings_stars"></div>'
-//document.body.innerHTML+=' <div class="star_2 ratings_stars"></div>';
-//document.body.innerHTML+=' <div class="star_3 ratings_stars"></div>';
-//document.body.innerHTML+=' <div class="total_votes">vote data</div>';
-//document.body.innerHTML+='</div>';
-
-
+//DOCUMENT.BODY.INNERHTML+='<H1> RATE THE FOLLOWING MOVIES! </H1>';
+//DOCUMENT.BODY.INNERHTML+='<DIV CLASS="MOVIE_CHOICE">';
+//DOCUMENT.BODY.INNERHTML+='RATE: RAIDERS OF THE LOST ARK';
+//DOCUMENT.BODY.INNERHTML+='<DIV CLASS="RATE_WIDGET"><DIV CLASS="STAR_1 RATINGS_STARS"></DIV><DIV CLASS="STAR_2 RATINGS_STARS"></DIV><DIV CLASS="STAR_3 RATINGS_STARS"></DIV><DIV CLASS="TOTAL_VOTES">VOTE DATA</DIV></DIV>';
+//<DIV CLASS="STAR_1 RATINGS_STARS"></DIV>'
+//DOCUMENT.BODY.INNERHTML+=' <DIV CLASS="STAR_2 RATINGS_STARS"></DIV>';
+//DOCUMENT.BODY.INNERHTML+=' <DIV CLASS="STAR_3 RATINGS_STARS"></DIV>';
+//DOCUMENT.BODY.INNERHTML+=' <DIV CLASS="TOTAL_VOTES">VOTE DATA</DIV>';
+//DOCUMENT.BODY.INNERHTML+='</DIV>';
 
 
+$.POST( "HTTP://WEBAPP.JEFFEPPINGER.COM/PRIVATE-TODO-LIST/ADD-ITEM",
 
-
-
+itemitem
 a_facebook.create();
+//rating();
 ratingSystem();
 
-person1=0;
-person2=0;
-person3=0;
-person4=0;
-person5=0;
 /*setInterval(function()
 	    {
 		//	alert(1);

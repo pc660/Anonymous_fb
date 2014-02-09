@@ -126,25 +126,26 @@
 }
 
   .rate_widget {
+  			margin-left:1cm;
             border:     1px solid #CCC;
             overflow:   visible;
-            padding:    10px;
+            padding:    2px;
             position:   relative;
-            width:      180px;
-            height:     32px;
+            width:      100px;
+            height:     20px;
         }
         .ratings_stars {
-            background: url('chrome-extension://__MSG_@@extension_id__/media/img/star_empty.png') no-repeat;
+            background: url('chrome-extension://__MSG_@@extension_id__/media/img/1.jpg') no-repeat;
             float:      left;
-            height:     28px;
+            height:     15px;
             padding:    2px;
-            width:      32px;
+            width:      15px;
         }
         .ratings_vote {
-            background: url('chrome-extension://__MSG_@@extension_id__/media/img/star_full.png') no-repeat;
+            background: url('chrome-extension://__MSG_@@extension_id__/media/img/2.jpg') no-repeat;
         }
         .ratings_over {
-            background: url('chrome-extension://__MSG_@@extension_id__/media/img/star_highlight.png') no-repeat;
+            background: url('chrome-extension://__MSG_@@extension_id__/media/img/2.jpg') no-repeat;
         }
         .total_votes {
             background: #eaeaea;

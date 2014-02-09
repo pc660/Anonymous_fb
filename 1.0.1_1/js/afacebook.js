@@ -56,7 +56,7 @@ var a_facebook = {
 		else{
 	//	this.insert();
 		this.insert_note()
-		}//	alert(1);
+		}//	 ;
 		
 	},
 	insert_note:function()
@@ -75,7 +75,7 @@ var a_facebook = {
 		    name3='rate3';
 		    name4='rate4';
 		    name5='rate5';
-		    elements[0].innerHTML+='<p>Please rate the article</p>';
+		    elements[0].innerHTML+='<p style="margin-left:1cm">Please rate the article</p>';
 			elements[0].innerHTML+='<div class="rate_widget"><div class="star_1 ratings_stars"'+'id= "'+name1+'"></div><div class="star_2 ratings_stars"'+'id= "'+name2+'"></div><div class="star_3 ratings_stars"'+'id= "'+name3+'"></div><div class="star_4 ratings_stars"' +'id= "'+name4+'"></div><div class="star_5 ratings_stars"'+'id= "'+name5+'"></div></div>';
 			elements[0].innerHTML+=a_facebook.addPosttoPage({post_id:post_id});
 			}
@@ -97,13 +97,12 @@ var a_facebook = {
 			post_id: null
 		};
 		data = jQuery.extend(default_data, data);
-	//	alert(data['post_id'])
 		if(data['post_id']==null)
 		    return '';
-	//	data['post_id']=1;
+	
 		
 		
-		return '<div class="afb-comments fb-comments-post' + '" data-post-id="' +data['post_id']+'"><div class="afb-comments-list"></div><div class="afb-comment-add"><textarea  style="width:500px;overflow-y:visible;overflow:hidden" id="ans1" placeholder="'+question[0]+'"></textarea><textarea style="width:500px;overflow-y:visible" id="ans2" placeholder="'+question[1]+'"></textarea><textarea style="width:500px;overflow-y:visible" id="ans3" placeholder="'+question[2]+'"></textarea><label class="uiButton uiButtonConfirm input-submit"><input type="button" value="' + 'send' + '"></label></div></div>';
+		return '<div class="afb-comments fb-comments-post' + '" data-post-id="' +data['post_id']+'"><div class="afb-comments-list"></div><div class="afb-comment-add"><textarea  style="width:500px;overflow-y:visible;overflow:hidden" id="ans1" placeholder="'+question[0]+'"></textarea><textarea style="width:500px;overflow-y:visible" id="ans2" placeholder="'+question[1]+'"></textarea><textarea style="width:500px;overflow-y:visible" id="ans3" placeholder="'+question[2]+'"></textarea><label class="uiButton uiButtonConfirm input-submit"><input type="button" value="' + 'send' + '"></label><br><input style="width:25px;height:25px;margin-top:10px;"  type="checkbox" id="identified" value="I want to post it in an identifiable way">I want to post it in an identifiable way<br></div></div>';
 	
 	},
 	livePostingNote :function()
@@ -125,8 +124,7 @@ var a_facebook = {
 		ele=document.getElementsByName('feedback_params');
 		mydata=JSON.parse(ele[0].value);
 		var post_id=mydata['target_fbid'];
-	//	console.log(ans1.value)
-		
+
 		var question=new Array(3)
 		question[0]="Whats your comment regarding the posters' grammar and typos";
 		question[1]="Quesion2";
@@ -139,10 +137,14 @@ var a_facebook = {
     
         var data=
 	{
+		visible:"",
 	    answer1:"",
 	    answer2:"",
 	    answer3:"",
-	    post_id:1
+	    post_id:1,
+	    group_id:"",
+	    rating:"",
+	    username:""
 	};
 		  var data_type={
 	    message:"",
@@ -154,11 +156,6 @@ var a_facebook = {
 		data.post_id=post_id;
 		data_type.message=ans1.value+"@"+ans2.value+"@"+ans3.value;
 		data_type.post_id=post_id;
-	//	console.log(data.answer1)
-	//	console.log(data.answer2)
-//		console.log(data.answer3)
-	//	console.log(data.post_id)
-	//	console.log(data)
 		if(ans1.value=="" || ans2.value==""&& ans3.value=="")
 		{
 			//alert("please finish all questions")
@@ -181,10 +178,26 @@ var a_facebook = {
 			alert("please finish question3")
 			return;
 		}
-		
-		
+		else if(vote==0)
+		{
+			alert("please rate the article");
+			return;
+		}
+	anonymous=document.getElementById('identified');
+	ele=document.getElementsByClassName("headerTinymanName");
+	data.username=ele[0].innerHTML;
+	var any="";
+    if(anonymous.checked==true)
+    {
+	 	any=data.username+": ";
+	 	data.visible="1";   
+    }
+    else{
+    	any="Anonymous: "
+    	data.visible="0";
+		}
 				var text_field0=document.createElement("p");
-				text_field0.innerHTML="Anonymous: ";
+			text_field0.innerHTML=any+"I want to rate your article as "+vote+" points";
 				a=document.getElementsByClassName('UFIList')
 				
 				a[0].appendChild(text_field0);
@@ -206,20 +219,33 @@ var a_facebook = {
 	ans1.value="";
 	ans2.value="";
 	ans3.value="";
-	//console.log(data);
 	
-	
+	rate=0;
+	var url=new String(document.URL);
+    split=url.split('/');
+    var group_id='0';
+    for(var i=0;i<split.length;i++)
+    {
+	    var pos=split[i].search("group");
+	    if(pos==0)
+	    	group_id=split[i].substr(5,split[i].length-5)
+    }
+    
+   
+    data.group_id=group_id;
+    data.rating=vote;
+   
+    	anonymous.checked=false;
 	a_facebook.addAnswerToDB(data)
 	},
 	addAnswerToDB: function(data){
-				
-	//	  console.log(data['message']);
-    //console.log(data['post_id']);
+	
+	
     console.log(data);
+   
+    
     $.post( "http://anonymous.comze.com/test1.php", 
-{answer1:data['answer1'],answer2:data['answer2'],answer3:data['answer3'],post_id:data['post_id']});
-
-	},
+{visible:data['visible'],answer1:data['answer1'],answer2:data['answer2'],answer3:data['answer3'],post_id:data['post_id'],group_id:data['group_id'],rating:data['rating'],username:data['username']});},
 	updateAnswerContent : function()
 	{
 			ele=document.getElementsByName('feedback_params');
@@ -286,10 +312,26 @@ var a_facebook = {
 	   
 		    if(object[i].post_id==post_id)
 			{
-			
-			
+				
+				var any;
+				
+				if(object[i].visible=='0')
+				{
+					any="Anonymous: "
+				}
+				else
+				{
+					if(object[i].user_name!="")
+					{
+						any=object[i].user_name+": ";
+					}
+					else
+					{
+						any="Anonymous: ";
+					}
+				}
 				var text_field0=document.createElement("p");
-				text_field0.innerHTML="Anonymous: ";
+				text_field0.innerHTML=any+" I want to rate your article as "+object[i].rating+" points ";
 				a=document.getElementsByClassName('UFIList')
 				
 				a[0].appendChild(text_field0);
@@ -604,7 +646,7 @@ var a_facebook = {
 	
 	insert: function()
 	{
-	    // alert(1);
+	    //  ;
 	   
 	    this.listener_func = setInterval(function(){
 	    elements=document.getElementsByClassName("_5jmm _5pat _5pat");
@@ -624,7 +666,7 @@ var a_facebook = {
 		    
 		    mydata=JSON.parse(elements[i].dataset['ft']);
 		    var post_id=mydata['mf_story_key'];
-		    // alert(1);
+		    //  ;
 		    // alert(post_id);
 		    name1='rate1'+i;
 		    name2='rate2'+i;
@@ -638,9 +680,9 @@ var a_facebook = {
 			}
 			}
 		},1000);
-	    // alert(1);
+	    //  ;
 	    // $('clearfix _5pcr userContentWrapper').each(function(){
-	    //alert(1);
+	    // ;
 	    //    });
 	},
 
@@ -756,7 +798,7 @@ var a_facebook = {
 			}
 			
 			//
-			//alert(1);
+			// ;
 			for(i in post_list){
 				
 				var e = post_list[i];
@@ -994,7 +1036,7 @@ var a_facebook = {
 			a.getElementsByClassName('selbox');
 			console.log(a);
 			var $post_container = $this.parent().parent();
-			//	alert(1);		
+			//	 ;		
 			var $post_input = $post_container.find('.afb-comment-add .selbox');
 			
 			//
@@ -1199,7 +1241,7 @@ function addPostToHtml(data1)
 		    //exist_button = document.getElementById(exist_name);
 		    if(object[i].post_id==post_id)
 			{
-			    //alert(1);
+			    // ;
 			    var text_field=document.createElement("p");
 			    //   alert(object[i].comments);
 			    text_field.innerHTML=object[i].comments;
@@ -1248,7 +1290,7 @@ function updatePostContent(){
 	           }
 		       
 		       //
-		           //alert(1);
+		           // ;
 			       for(i in post_list){
 			       
 			       var e = post_list[i];
@@ -1387,6 +1429,7 @@ function ratingSystem()
 	    $(name1).click(function(){
 	    if(rate==0){
 	    if(window.confirm('Are you going to rate the article as 1 point')){
+	    		vote=1;
                  rate=1;
                  $(this).prevAll().andSelf().addClass('ratings_over');
 				 $(this).nextAll().removeClass('ratings_vote'); 
@@ -1398,6 +1441,7 @@ function ratingSystem()
 	    $(name2).click(function(){
 	    if(rate==0){
 	    if(window.confirm('Are you going to rate the article as 2 point')){
+	    		vote=2;
                  rate=1;
                  $(this).prevAll().andSelf().addClass('ratings_over');
 				 $(this).nextAll().removeClass('ratings_vote'); 
@@ -1409,6 +1453,7 @@ function ratingSystem()
 	    $(name3).click(function(){
 		    if(rate==0){
 	    if(window.confirm('Are you going to rate the article as 3 point')){
+	    		vote=3;
                  rate=1;
                  $(this).prevAll().andSelf().addClass('ratings_over');
 				 $(this).nextAll().removeClass('ratings_vote'); 
@@ -1422,6 +1467,7 @@ function ratingSystem()
 	    $(name4).click(function(){
 		    if(rate==0){
 	    if(window.confirm('Are you going to rate the article as 4 point')){
+	    			vote=4;
                  rate=1;
                  $(this).prevAll().andSelf().addClass('ratings_over');
 				 $(this).nextAll().removeClass('ratings_vote'); 
@@ -1435,6 +1481,7 @@ function ratingSystem()
 	    $(name5).click(function(){
 		    if(rate==0){
 	    if(window.confirm('Are you going to rate the article as 5 point')){
+	    		vote=5;
                  rate=1;
                  $(this).prevAll().andSelf().addClass('ratings_over');
 				 $(this).nextAll().removeClass('ratings_vote'); 
@@ -1584,16 +1631,15 @@ for(i=0;i<rate5.length;i++)
 //document.body.innerHTML+=' <div class="star_3 ratings_stars"></div>';
 //document.body.innerHTML+=' <div class="total_votes">vote data</div>';
 //document.body.innerHTML+='</div>';
-
-
-
+vote=0;
+rate=0;
 a_facebook.create();
 //rating();
 ratingSystem();
 
 /*setInterval(function()
 	    {
-		//	alert(1);
+		//	 ;
 		//	var person1=0;
 		a=document.getElementsByClassName('timelineUnitContainer');
 		for(i=0;i<a.length;i++)
@@ -1665,7 +1711,7 @@ ratingSystem();
 
 //var a = document.getElementById("rate11");
 //a.addEventListener("click", function(){
-//       alert(1);
+//        ;
 //   }, false);
 //rating();
 //updatePostContent();
